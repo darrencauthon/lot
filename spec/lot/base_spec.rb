@@ -6,9 +6,11 @@ end
 class Giraffe < Lot::Base
 end
 
+types_for_lot_base_testing = [Elephant, Giraffe]
+
 describe Lot::Base do
 
-  [Elephant, Giraffe].each do |type|
+  types_for_lot_base_testing.each do |type|
 
     describe "working with data objects (#{type})" do
 
