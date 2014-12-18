@@ -56,9 +56,7 @@ module Lot
     def method_missing meth, *args, &blk
       key = meth.to_s.gsub('=', '')
       self.class.schema << { name: key.to_sym, type: :string }
-      if meth.to_s[-1] == '='
-        @data[key] = args[0]
-      end
+      @data[key] = args[0] if meth.to_s[-1] == '='
       @data[key]
     end
 
