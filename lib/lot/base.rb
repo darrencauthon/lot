@@ -55,9 +55,16 @@ module Lot
 
     def method_missing meth, *args, &blk
       key = meth.to_s.gsub('=', '')
+      value = args[0]
       if meth.to_s[-1] == '='
-        self.class.schema << { name: key.to_sym, type: :string }
-        @data[key] = args[0] 
+        if schema_record = self.class.schema.select { |x| x[:name] == key.to_sym }.first
+          if definition = Lot.types[schema_record[:type]]
+            value = definition[:serialize].call value
+          end
+        else
+          self.class.schema << { name: key.to_sym, type: :string }
+        end
+        @data[key] = value
       end
       value = @data[key]
       schema_record = self.class.schema.select { |x| x[:name] == key.to_sym }.first

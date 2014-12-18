@@ -114,6 +114,17 @@ describe Lot::Base do
             type.schema[0][:name].must_equal field
           end
 
+          it "should only add the field once" do
+            field = SecureRandom.uuid.split('-')[0].to_sym
+
+            record = type.new
+            record.send("#{field}=".to_sym, SecureRandom.uuid)
+            record.send("#{field}=".to_sym, SecureRandom.uuid)
+            record.save
+
+            type.schema.count.must_equal 1
+          end
+
           it "should add multiple fields" do
             field1 = SecureRandom.uuid.split('-')[0].to_sym
             field2 = SecureRandom.uuid.split('-')[0].to_sym
@@ -167,7 +178,7 @@ describe Lot::Base do
 
             before do
               Lot.types[:something_else] = {
-                                             serialize:   -> (v) { v },
+                                             serialize:   -> (v) { ".#{v}" },
                                              deserialize: -> (v) { "#{v}." },
                                            }
               type.schema << { name: field, type: :something_else }
@@ -175,6 +186,16 @@ describe Lot::Base do
             
             it "should run the value through the deserializer before returning it" do
               type.new.send(field).must_equal '.'
+            end
+
+            it "should run the value through the serializer when setting it" do
+              record = type.new
+              value  = SecureRandom.uuid
+              record.send("#{field}=".to_sym, value)
+              record.save
+
+              record = type.find record.id
+              record.send(field).must_equal ".#{value}."
             end
 
           end
