@@ -8,7 +8,7 @@ module Lot
       statement = "
         class ::#{thing}Base < ActiveRecord::Base
           self.table_name = 'records'
-          serialize :data, Hash
+          serialize :data_as_hash, Hash
         end
       "
       result = eval statement
@@ -16,7 +16,7 @@ module Lot
 
     def initialize source = nil
       if source
-        @data = source.data
+        @data = source.data_as_hash
         @id = source.id
       end
       @data = {} unless @data
@@ -24,7 +24,7 @@ module Lot
 
     def save
       record = eval("#{self.class}Base").new
-      record.data = @data
+      record.data_as_hash = @data
       record.record_type = self.class.to_s
       save_result = record.save
       self.id = record.id
