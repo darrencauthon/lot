@@ -99,6 +99,11 @@ describe Lot::Base do
     let(:first_type)  { types_for_lot_base_testing[0] }
     let(:second_type) { types_for_lot_base_testing[1] }
 
+    before do
+      setup_db
+      types_for_lot_base_testing.each { |t| t.delete_all }
+    end
+
     it "should keep the counts separate" do
       first_record = first_type.new.save
       second_record = second_type.new.save

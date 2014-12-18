@@ -9,6 +9,7 @@ module Lot
         class ::#{thing}Base < ActiveRecord::Base
           self.table_name = 'records'
           serialize :data_as_hash, Hash
+          serialize :data_as_hstore, ActiveRecord::Coders::Hstore
         end
       "
       result = eval statement

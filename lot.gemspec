@@ -22,5 +22,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
 
   spec.add_runtime_dependency 'activerecord'
+  #spec.add_runtime_dependency 'activerecord-postgres-hstore'
   spec.add_runtime_dependency 'pg'
 end
