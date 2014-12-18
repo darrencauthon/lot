@@ -43,7 +43,7 @@ module Lot
     end
 
     def method_missing meth, *args, &blk
-      key = 'name'# meth.to_s.gsub('=', '')
+      key = meth.to_s.gsub('=', '')
       if meth.to_s[-1] == '='
         @data[key] = args[0]
       end

@@ -38,6 +38,18 @@ describe Lot::Base do
       elephant = Elephant.find elephant.id
       elephant.name.must_equal name
     end
+
+    it "should let me save multiple, different attributes about the record" do
+      city, state = SecureRandom.uuid, SecureRandom.uuid
+      elephant = Elephant.new
+      elephant.city  = city
+      elephant.state = state
+      elephant.save
+
+      elephant = Elephant.find elephant.id
+      elephant.city.must_equal city
+      elephant.state.must_equal state
+    end
   end
 
 end
