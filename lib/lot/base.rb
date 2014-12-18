@@ -37,7 +37,7 @@ module Lot
     end
 
     def self.count
-      1
+      eval("#{self}Base").count
     end
 
     def self.delete_all

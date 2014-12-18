@@ -29,6 +29,24 @@ describe Lot::Base do
 
       end
 
+      describe "delete all" do
+        it "should delete all of the records" do
+          base_type = eval("#{type}Base")
+          3.times { base_type.create }
+          type.delete_all
+          base_type.count.must_equal 0
+        end
+      end
+
+      describe "counting" do
+        it "should return the number of records" do
+          base_type = eval("#{type}Base")
+          base_type.delete_all
+          3.times { base_type.create }
+          type.count.must_equal 3
+        end
+      end
+
       describe "using this for crud operations" do
 
         it "should allow me to save records" do
