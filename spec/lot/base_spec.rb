@@ -141,6 +141,46 @@ describe Lot::Base do
 
         end
 
+        describe "building a schema ahead of time" do
+
+          it "should let me add fields to the object" do
+            field = SecureRandom.uuid.split('-')[0].to_sym
+
+            type.schema << { name: field, type: :string }
+
+            type.schema.count.must_equal 1
+            type.schema[0][:name].must_equal field
+          end
+
+          it "should let me set a new type" do
+            field = SecureRandom.uuid.split('-')[0].to_sym
+
+            type.schema << { name: field, type: :something_else }
+
+            type.schema.count.must_equal 1
+            type.schema[0][:type].must_equal :something_else
+          end
+
+          describe "defining how to serialize this type" do
+
+            let(:field) { SecureRandom.uuid.split('-')[0].to_sym }
+
+            before do
+              Lot.types[:something_else] = {
+                                             serialize:   -> (v) { v },
+                                             deserialize: -> (v) { "#{v}." },
+                                           }
+              type.schema << { name: field, type: :something_else }
+            end
+            
+            it "should run the value through the deserializer before returning it" do
+              type.new.send(field).must_equal '.'
+            end
+
+          end
+
+        end
+
       end
 
     end
