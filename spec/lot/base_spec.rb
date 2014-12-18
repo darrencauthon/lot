@@ -97,44 +97,48 @@ describe Lot::Base do
           type.class_eval { @schema = nil }
         end
 
-        it "should default to an empty schema" do
-          type.schema.count.must_equal 0
-        end
+        describe "starting from nothing" do
 
-        it "should add fields to the schema when they are used for the first time" do
-          field = SecureRandom.uuid.split('-')[0].to_sym
+          it "should default to an empty schema" do
+            type.schema.count.must_equal 0
+          end
 
-          record = type.new
-          record.send("#{field}=".to_sym, SecureRandom.uuid)
-          record.save
+          it "should add fields to the schema when they are used for the first time" do
+            field = SecureRandom.uuid.split('-')[0].to_sym
 
-          type.schema.count.must_equal 1
-          type.schema[0][:name].must_equal field
-        end
+            record = type.new
+            record.send("#{field}=".to_sym, SecureRandom.uuid)
+            record.save
 
-        it "should add multiple fields" do
-          field1 = SecureRandom.uuid.split('-')[0].to_sym
-          field2 = SecureRandom.uuid.split('-')[0].to_sym
+            type.schema.count.must_equal 1
+            type.schema[0][:name].must_equal field
+          end
 
-          record = type.new
-          record.send("#{field1}=".to_sym, SecureRandom.uuid)
-          record.send("#{field2}=".to_sym, SecureRandom.uuid)
-          record.save
+          it "should add multiple fields" do
+            field1 = SecureRandom.uuid.split('-')[0].to_sym
+            field2 = SecureRandom.uuid.split('-')[0].to_sym
 
-          type.schema.count.must_equal 2
-          type.schema[0][:name].must_equal field1
-          type.schema[1][:name].must_equal field2
-        end
+            record = type.new
+            record.send("#{field1}=".to_sym, SecureRandom.uuid)
+            record.send("#{field2}=".to_sym, SecureRandom.uuid)
+            record.save
 
-        it "should default fields to string" do
-          field = SecureRandom.uuid.split('-')[0].to_sym
+            type.schema.count.must_equal 2
+            type.schema[0][:name].must_equal field1
+            type.schema[1][:name].must_equal field2
+          end
 
-          record = type.new
-          record.send("#{field}=".to_sym, SecureRandom.uuid)
-          record.save
+          it "should default fields to string" do
+            field = SecureRandom.uuid.split('-')[0].to_sym
 
-          type.schema.count.must_equal 1
-          type.schema[0][:type].must_equal :string
+            record = type.new
+            record.send("#{field}=".to_sym, SecureRandom.uuid)
+            record.save
+
+            type.schema.count.must_equal 1
+            type.schema[0][:type].must_equal :string
+          end
+
         end
 
       end
