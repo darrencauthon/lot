@@ -25,6 +25,7 @@ module Lot
     def save
       record = eval("#{self.class}Base").new
       record.data = @data
+      record.record_type = self.class.to_s
       save_result = record.save
       self.id = record.id
       save_result
@@ -36,7 +37,7 @@ module Lot
     end
 
     def self.count
-      eval("#{self}Base").count
+      eval("#{self}Base").where(record_type: self.to_s).count
     end
 
     def self.delete_all

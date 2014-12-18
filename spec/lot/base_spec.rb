@@ -44,7 +44,7 @@ describe Lot::Base do
         it "should return the number of records" do
           base_type = eval("#{type}Base")
           base_type.delete_all
-          3.times { base_type.create }
+          3.times { type.new.save }
           type.count.must_equal 3
         end
       end
@@ -90,6 +90,21 @@ describe Lot::Base do
 
       end
 
+    end
+
+  end
+
+  describe "saving records of each type" do
+
+    let(:first_type)  { types_for_lot_base_testing[0] }
+    let(:second_type) { types_for_lot_base_testing[1] }
+
+    it "should keep the counts separate" do
+      first_record = first_type.new.save
+      second_record = second_type.new.save
+
+      first_type.count.must_equal 1
+      second_type.count.must_equal 1
     end
 
   end
