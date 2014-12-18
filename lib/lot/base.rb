@@ -17,7 +17,7 @@ module Lot
 
     def initialize source = nil
       if source
-        @data = source.data_as_hash
+        @data = source.data_as_hstore
         @id = source.id
       end
       @data = {} unless @data
@@ -25,7 +25,7 @@ module Lot
 
     def save
       record = eval("#{self.class}Base").new
-      record.data_as_hash = @data
+      record.data_as_hstore = @data
       record.record_type = self.class.to_s
       save_result = record.save
       self.id = record.id
