@@ -47,6 +47,15 @@ describe Lot::Base do
         end
       end
 
+      describe "finding a record" do
+        it "should return the record in question" do
+          base_type = eval("#{type}Base")
+          base_type.delete_all
+          records = (0...3).to_a.map { base_type.create }
+          records.each { |r| type.find(r.id).id.must_equal r.id }
+        end
+      end
+
       describe "using this for crud operations" do
 
         it "should allow me to save records" do

@@ -31,8 +31,7 @@ module Lot
     end
 
     def self.find id
-      #record = eval("#{self}Base").find id
-      record = eval("#{self}Base").first
+      record = eval("#{self}Base").find id
       new record
     end
 
