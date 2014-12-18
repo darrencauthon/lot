@@ -28,6 +28,16 @@ describe Lot::Base do
       elephant.save
       Elephant.count.must_equal 1
     end
+
+    it "should let me save attributes about the record" do
+      name = SecureRandom.uuid
+      elephant = Elephant.new
+      elephant.name = name
+      elephant.save
+
+      elephant = Elephant.find elephant.id
+      elephant.name.must_equal name
+    end
   end
 
 end
