@@ -13,8 +13,8 @@ describe Lot::Base do
     describe "working with data objects (#{type})" do
 
       before do
-        type.delete_all
         setup_db
+        type.delete_all
       end
 
       describe "creating the data store underneath the object" do

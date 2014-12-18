@@ -31,7 +31,8 @@ module Lot
     end
 
     def self.find id
-      record = eval("#{self}Base").find id
+      #record = eval("#{self}Base").find id
+      record = eval("#{self}Base").first
       new record
     end
 
@@ -40,6 +41,7 @@ module Lot
     end
 
     def self.delete_all
+      eval("#{self}Base").delete_all
     end
 
     def method_missing meth, *args, &blk
