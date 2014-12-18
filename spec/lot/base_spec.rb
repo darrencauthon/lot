@@ -126,6 +126,17 @@ describe Lot::Base do
           type.schema[1][:name].must_equal field2
         end
 
+        it "should default fields to string" do
+          field = SecureRandom.uuid.split('-')[0].to_sym
+
+          record = type.new
+          record.send("#{field}=".to_sym, SecureRandom.uuid)
+          record.save
+
+          type.schema.count.must_equal 1
+          type.schema[0][:type].must_equal :string
+        end
+
       end
 
     end
