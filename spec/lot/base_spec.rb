@@ -3,53 +3,66 @@ require_relative '../spec_helper'
 class Elephant < Lot::Base
 end
 
+class Giraffe < Lot::Base
+end
+
 describe Lot::Base do
 
-  before do
-    Elephant.delete_all
-    setup_db
-  end
+  [Elephant, Giraffe].each do |type|
 
-  describe "creating the data store underneath the object" do
+    describe "working with data objects (#{type})" do
 
-    it "should create a base class for the object in question" do
-      eval("ElephantBase") # this will throw if it does not exist
+      before do
+        type.delete_all
+        setup_db
+      end
+
+      describe "creating the data store underneath the object" do
+
+        it "should create a base class for the object in question" do
+          eval("#{type}Base") # this will throw if it does not exist
+        end
+        
+        it "should be an active record base" do
+          eval("#{type}Base").new.is_a?(ActiveRecord::Base).must_equal true
+        end
+
+      end
+
+      describe "using this for crud operations" do
+
+        it "should allow me to save records" do
+          record = type.new
+          record.save
+          type.count.must_equal 1
+        end
+
+        it "should let me save attributes about the record" do
+          name = SecureRandom.uuid
+          record = type.new
+          record.name = name
+          record.save
+
+          record = type.find record.id
+          record.name.must_equal name
+        end
+
+        it "should let me save multiple, different attributes about the record" do
+          city, state = SecureRandom.uuid, SecureRandom.uuid
+          record = type.new
+          record.city  = city
+          record.state = state
+          record.save
+
+          record = type.find record.id
+          record.city.must_equal city
+          record.state.must_equal state
+        end
+
+      end
+
     end
-    
-    it "should be an active record base" do
-      eval("ElephantBase").new.is_a?(ActiveRecord::Base).must_equal true
-    end
 
-  end
-
-  describe "using this for crud operations" do
-    it "should allow me to save records" do
-      elephant = Elephant.new
-      elephant.save
-      Elephant.count.must_equal 1
-    end
-
-    it "should let me save attributes about the record" do
-      name = SecureRandom.uuid
-      elephant = Elephant.new
-      elephant.name = name
-      elephant.save
-
-      elephant = Elephant.find elephant.id
-      elephant.name.must_equal name
-    end
-
-    it "should let me save multiple, different attributes about the record" do
-      city, state = SecureRandom.uuid, SecureRandom.uuid
-      elephant = Elephant.new
-      elephant.city  = city
-      elephant.state = state
-      elephant.save
-
-      elephant = Elephant.find elephant.id
-      elephant.city.must_equal city
-      elephant.state.must_equal state
-    end
   end
 
 end
