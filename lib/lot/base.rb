@@ -45,8 +45,17 @@ module Lot
       eval("#{self}Base").delete_all
     end
 
+    class << self
+      attr_accessor :schema
+    end
+
+    def self.schema
+      @schema ||= []
+    end
+
     def method_missing meth, *args, &blk
       key = meth.to_s.gsub('=', '')
+      self.class.schema << { name: key.to_sym }
       if meth.to_s[-1] == '='
         @data[key] = args[0]
       end
