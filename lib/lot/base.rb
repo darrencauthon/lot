@@ -6,7 +6,7 @@ module Lot
 
     def self.inherited thing
       statement = "
-        class ::#{thing}Base < ActiveRecord::Base
+        class ::ElephantBase < ActiveRecord::Base
           self.table_name = 'records'
           serialize :data, Hash
         end
@@ -23,7 +23,7 @@ module Lot
     end
 
     def save
-      record = eval("#{self.class}Base").new
+      record = eval("ElephantBase").new
       record.data = @data
       save_result = record.save
       self.id = record.id
@@ -31,7 +31,7 @@ module Lot
     end
 
     def self.find id
-      record = eval("#{self}Base").find id
+      record = eval("ElephantBase").find id
       new record
     end
 
