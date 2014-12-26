@@ -259,4 +259,62 @@ describe Lot::Base do
 
   end
 
+  describe "where" do
+
+    let(:first_type)  { types_for_lot_base_testing[0] }
+    let(:second_type) { types_for_lot_base_testing[1] }
+
+    before do
+      setup_db
+      types_for_lot_base_testing.each { |t| t.delete_all }
+    end
+
+    it "should allow me to search by one property" do
+      record = first_type.new
+      record.first_name = 'stars'
+
+      another_record = first_type.new
+      another_record.first_name = 'hello'
+
+      yet_another_record = first_type.new
+      yet_another_record.first_name = 'world'
+
+      [record, another_record, yet_another_record]
+        .sort_by { |_| SecureRandom.uuid }
+        .each    { |x| x.save }
+
+      results = first_type.where(first_name: 'world')
+      results.count.must_equal 1
+      results.first.id.must_equal yet_another_record.id
+    end
+
+    it "should allow me to search by two properties" do
+      record = first_type.new
+      record.city  = 'Olathe'
+      record.state = 'KS'
+
+      another_record = first_type.new
+      another_record.city  = 'Olathe'
+      another_record.state = 'MO'
+
+      yet_another_record = first_type.new
+      yet_another_record.city  = 'Kansas City'
+      yet_another_record.state = 'KS'
+
+      sigh_one_more = first_type.new
+      sigh_one_more.city  = 'Olathe'
+      sigh_one_more.state = 'KS'
+
+      [record, another_record, yet_another_record, sigh_one_more]
+        .sort_by { |_| SecureRandom.uuid }
+        .each    { |x| x.save }
+
+      results = first_type.where(city: 'Olathe', state: 'KS')
+      results.count.must_equal 2
+      results.map { |x| x.id }.include?(record.id).must_equal true
+      results.map { |x| x.id }.include?(sigh_one_more.id).must_equal true
+    end
+
+  end
+
 end

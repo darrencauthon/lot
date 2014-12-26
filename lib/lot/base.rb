@@ -43,6 +43,12 @@ module Lot
         .map { |r| new r }
     end
 
+    def self.where options
+      options.reduce(all) do |t, i|
+        t.select { |x| x.send(i[0]) == i[1] }
+      end
+    end
+
     def self.count
       eval("#{self}Base").where(record_type: self.to_s).count
     end
