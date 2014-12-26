@@ -228,4 +228,35 @@ describe Lot::Base do
 
   end
 
+  describe "all" do
+
+    let(:first_type)  { types_for_lot_base_testing[0] }
+    let(:second_type) { types_for_lot_base_testing[1] }
+
+    before do
+      setup_db
+      types_for_lot_base_testing.each { |t| t.delete_all }
+    end
+
+    it "should return the appropriate records" do
+      first_record = first_type.new.save
+      second_record = second_type.new.save
+
+      first_type.all.count.must_equal 1
+      second_type.all.count.must_equal 1
+    end
+
+    it "should return the records for each" do
+      first_record = first_type.new
+      first_record.save
+
+      second_record = second_type.new
+      second_record.save
+
+      first_type.all.first.id.must_equal first_record.id
+      second_type.all.first.id.must_equal second_record.id
+    end
+
+  end
+
 end

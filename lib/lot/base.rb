@@ -37,6 +37,12 @@ module Lot
       new record
     end
 
+    def self.all
+      eval("#{self}Base")
+        .where(record_type: self.to_s)
+        .map { |r| new r }
+    end
+
     def self.count
       eval("#{self}Base").where(record_type: self.to_s).count
     end
