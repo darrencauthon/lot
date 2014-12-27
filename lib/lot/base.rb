@@ -24,7 +24,7 @@ module Lot
     end
 
     def save
-      record = eval("#{self.class}Base").new
+      record = eval("#{self.class}Base").where(id: self.id).first || eval("#{self.class}Base").new
       record.data_as_hstore = @data
       record.record_type = self.class.to_s
       save_result = record.save

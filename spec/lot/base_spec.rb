@@ -226,6 +226,19 @@ describe Lot::Base do
       second_type.count.must_equal 1
     end
 
+    it "should update the record after it has been created" do
+      record = first_type.new
+      record.save
+      record.name = 'something'
+      record.save
+
+      first_type.count.must_equal 1
+
+      record = first_type.find record.id
+      record.name.must_equal 'something'
+      record
+    end
+
   end
 
   describe "all" do
