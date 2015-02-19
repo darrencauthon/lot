@@ -6,7 +6,7 @@ require_relative '../lib/lot'
 def setup_db options = {}
   options.merge!( {
                     adapter: 'postgresql',
-                    host:    'localhost',
+                    host:    '::1',
                     encoding: 'unicode',
                     database: 'lot_test',
                     pool: '5',
