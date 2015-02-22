@@ -85,7 +85,7 @@ module Lot
     end
 
     def self.the_data_source
-      eval("#{self}Base")
+      @the_data_source ||= eval("#{self}Base")
     end
 
   end
