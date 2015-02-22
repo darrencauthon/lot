@@ -85,11 +85,11 @@ module Lot
     end
 
     def self.the_data_source
-      @the_data_source ||= eval("#{self}Base")
+      @the_data_source ||= the_data_source_for(self).constantize
     end
 
     def the_data_source
-      @the_data_source ||= eval("#{self.class}Base")
+      @the_data_source ||= self.class.the_data_source
     end
 
   end
