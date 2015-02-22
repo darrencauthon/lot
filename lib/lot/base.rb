@@ -19,15 +19,10 @@ module Lot
     end
 
     def save
-      record = the_data_source.where(id: self.id).first
-      unless record
-        record = the_data_source.new
-        record.record_type = self.class.to_s
-      end
+      record = the_data_source.where(id: self.id).first ||
+               the_data_source.new.tap { |r| r.record_type = self.class.to_s }
       record.data_as_hstore = @data
-      save_result = record.save
-      self.id = record.id
-      save_result
+      record.save.tap { |_| self.id = record.id }
     end
 
     def self.find id
