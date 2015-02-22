@@ -5,12 +5,9 @@ module Lot
     attr_accessor :id
 
     def self.inherited thing
-      statement = "
-        class ::#{thing}Base < ActiveRecord::Base
-          self.table_name = 'records'
-        end
-      "
-      result = eval statement
+      eval("class #{the_data_source_for(thing)} < ActiveRecord::Base
+              self.table_name = 'records'
+            end")
     end
 
     def initialize source = nil
@@ -81,6 +78,10 @@ module Lot
         end
       end
       value
+    end
+
+    def self.the_data_source_for thing
+      "::#{thing}Base"
     end
 
   end
