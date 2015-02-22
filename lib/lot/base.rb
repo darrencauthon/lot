@@ -31,22 +31,22 @@ module Lot
     end
 
     def self.find id
-      record = eval("#{self}Base").find id
+      record = the_data_source.find id
       new record
     end
 
     def self.all
-      eval("#{self}Base")
+      the_data_source
         .where(record_type: self.to_s)
         .map { |r| new r }
     end
 
     def self.count
-      eval("#{self}Base").where(record_type: self.to_s).count
+      the_data_source.where(record_type: self.to_s).count
     end
 
     def self.delete_all
-      eval("#{self}Base").delete_all
+      the_data_source.delete_all
     end
 
     class << self
@@ -82,6 +82,10 @@ module Lot
 
     def self.the_data_source_for thing
       "::#{thing}Base"
+    end
+
+    def self.the_data_source
+      eval("#{self}Base")
     end
 
   end
