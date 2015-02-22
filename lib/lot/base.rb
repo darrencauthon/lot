@@ -26,8 +26,7 @@ module Lot
     end
 
     def self.find id
-      record = the_data_source.find id
-      new record
+      new the_data_source.find(id)
     end
 
     def self.all
