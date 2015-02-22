@@ -19,7 +19,7 @@ module Lot
     end
 
     def save
-      record = eval("#{self.class}Base").where(id: self.id).first
+      record = the_data_source.where(id: self.id).first
       unless record
         record = eval("#{self.class}Base").new
         record.record_type = self.class.to_s
@@ -86,6 +86,10 @@ module Lot
 
     def self.the_data_source
       @the_data_source ||= eval("#{self}Base")
+    end
+
+    def the_data_source
+      eval("#{self.class}Base")
     end
 
   end
