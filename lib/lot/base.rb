@@ -65,8 +65,7 @@ module Lot
         @data[key] = value
       end
       value = @data[key]
-      schema_record = self.class.schema.select { |x| x[:name] == key.to_sym }.first
-      if schema_record
+      if schema_record = self.class.schema.select { |x| x[:name] == key.to_sym }.first
         if definition = Lot.types[schema_record[:type]]
           value = definition[:deserialize].call value
         end
