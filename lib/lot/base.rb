@@ -13,9 +13,9 @@ module Lot
     def initialize source = nil
       if source
         @data = source.data_as_hstore
-        @id = source.id
+        @id   = source.id
       end
-      @data = {} unless @data
+      @data ||= {}
     end
 
     def save
