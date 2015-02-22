@@ -53,6 +53,14 @@ module Lot
 
     def method_missing meth, *args, &blk
       set_the_value(meth, args) if setting_a_value? meth
+      get_the_value meth
+    end
+
+    def setting_a_value? meth
+      meth.to_s[-1] == '='
+    end
+
+    def get_the_value meth
       key = meth.to_s.gsub('=', '')
       value = @data[key]
       if schema_record = self.class.schema.select { |x| x[:name] == key.to_sym }.first
@@ -61,10 +69,6 @@ module Lot
         end
       end
       value
-    end
-
-    def setting_a_value? meth
-      meth.to_s[-1] == '='
     end
 
     def set_the_value meth, args
