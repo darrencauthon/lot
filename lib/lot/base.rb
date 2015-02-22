@@ -61,7 +61,7 @@ module Lot
     end
 
     def get_the_value meth
-      key = meth.to_s.gsub('=', '')
+      key   = meth.to_s.gsub('=', '')
       value = @data[key]
       if schema_record = self.class.schema.select { |x| x[:name] == key.to_sym }.first
         if definition = Lot.types[schema_record[:type]]
