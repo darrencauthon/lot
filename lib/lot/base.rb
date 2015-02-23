@@ -25,43 +25,45 @@ module Lot
       record.save.tap { |_| self.id = record.id }
     end
 
-    def self.find id
-      new the_data_source.find(id)
-    end
-
-    def self.all
-      the_data_source
-        .where(record_type: self.to_s)
-        .map { |r| new r }
-    end
-
-    def self.count
-      the_data_source.where(record_type: self.to_s).count
-    end
-
-    def self.delete_all
-      the_data_source.delete_all
-    end
-
     class << self
-      attr_accessor :schema
-    end
 
-    def self.schema
-      @schema ||= []
+      attr_accessor :schema
+
+      def schema
+        @schema ||= []
+      end
+
+      def the_data_source_for thing
+        "::#{thing}Base"
+      end
+
+      def the_data_source
+        @the_data_source ||= the_data_source_for(self).constantize
+      end
+
+      def count
+        the_data_source.where(record_type: self.to_s).count
+      end
+
+      def delete_all
+        the_data_source.delete_all
+      end
+
+      def find id
+        new the_data_source.find(id)
+      end
+
+      def all
+        the_data_source
+          .where(record_type: self.to_s)
+          .map { |r| new r }
+      end
+
     end
 
     def method_missing meth, *args, &blk
       set_the_value(meth, args[0]) if setting_a_value? meth
       get_the_value meth
-    end
-
-    def self.the_data_source_for thing
-      "::#{thing}Base"
-    end
-
-    def self.the_data_source
-      @the_data_source ||= the_data_source_for(self).constantize
     end
 
     def the_data_source
