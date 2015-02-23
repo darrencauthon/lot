@@ -61,18 +61,22 @@ module Lot
     end
 
     def get_the_value meth
-      key   = meth.to_s.gsub('=', '').to_sym
+      key   = pull_the_key_from meth
       stuff = lookup_schema_stuff_for key
       stuff[:definition] ? stuff[:definition][:deserialize].call(@data[key])
                          : @data[key]
     end
 
     def set_the_value meth, value
-      key   = meth.to_s.gsub('=', '').to_sym
+      key   = pull_the_key_from meth
       stuff = lookup_schema_stuff_for key
       self.class.schema << { name: key, type: :string } unless stuff[:schema_record]
       @data[key] = stuff[:definition] ? stuff[:definition][:serialize].call(value)
                                       : value
+    end
+
+    def pull_the_key_from meth
+      meth.to_s.gsub('=', '').to_sym
     end
 
     def lookup_schema_stuff_for key
