@@ -98,10 +98,8 @@ module Lot
     end
 
     def lookup_schema_stuff_for key
-      {}.tap do |d|
-        if d[:schema_record] = self.class.schema.select { |x| x[:name] == key }.first
-          d[:definition] = Lot.types[d[:schema_record][:type]]
-        end
+      { schema_record: self.class.schema.select { |x| x[:name] == key }.first }.tap do |d|
+        d[:definition] = Lot.types[d[:schema_record][:type]] if d[:schema_record]
       end
     end
 
