@@ -73,14 +73,9 @@ module Lot
 
     def set_the_value meth, args
       key   = meth.to_s.gsub('=', '').to_sym
-      value = args[0]
       stuff = lookup_schema_stuff_for key
-      if stuff[:schema_record]
-        value = stuff[:definition][:serialize].call(value) if stuff[:definition]
-      else
-        self.class.schema << { name: key, type: :string }
-      end
-      @data[key] = value
+      self.class.schema << { name: key, type: :string } unless stuff[:schema_record]
+      @data[key] = stuff[:definition] ? stuff[:definition][:serialize].call(args[0]) : args[0]
     end
 
     def lookup_schema_stuff_for key
