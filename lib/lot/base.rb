@@ -74,14 +74,21 @@ module Lot
     def set_the_value meth, args
       key   = meth.to_s.gsub('=', '').to_sym
       value = args[0]
-      if schema_record = self.class.schema.select { |x| x[:name] == key }.first
-        if definition = Lot.types[schema_record[:type]]
-          value = definition[:serialize].call value
-        end
+      stuff = lookup_schema_stuff_for key
+      if stuff[:schema_record]
+        value = stuff[:definition][:serialize].call(value) if stuff[:definition]
       else
         self.class.schema << { name: key, type: :string }
       end
       @data[key] = value
+    end
+
+    def lookup_schema_stuff_for key
+      {}.tap do |d|
+        if d[:schema_record] = self.class.schema.select { |x| x[:name] == key }.first
+          d[:definition] = Lot.types[d[:schema_record][:type]]
+        end
+      end
     end
 
     def self.the_data_source_for thing
