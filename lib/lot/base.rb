@@ -12,10 +12,10 @@ module Lot
 
     def initialize source = nil
       if source
-        @data = source.data_as_hstore
+        @data = HashWithIndifferentAccess.new(source.data_as_hstore || {})
         @id   = source.id
       end
-      @data ||= {}
+      @data ||= HashWithIndifferentAccess.new({})
     end
 
     def save
@@ -61,9 +61,9 @@ module Lot
     end
 
     def get_the_value meth
-      key   = meth.to_s.gsub('=', '')
-      value = @data[key]
-      if schema_record = self.class.schema.select { |x| x[:name] == key.to_sym }.first
+      key   = meth.to_s.gsub('=', '').to_sym
+      value = @data[key.to_s]
+      if schema_record = self.class.schema.select { |x| x[:name] == key }.first
         if definition = Lot.types[schema_record[:type]]
           value = definition[:deserialize].call value
         end
@@ -72,14 +72,14 @@ module Lot
     end
 
     def set_the_value meth, args
-      key   = meth.to_s.gsub('=', '')
+      key   = meth.to_s.gsub('=', '').to_sym
       value = args[0]
-      if schema_record = self.class.schema.select { |x| x[:name] == key.to_sym }.first
+      if schema_record = self.class.schema.select { |x| x[:name] == key }.first
         if definition = Lot.types[schema_record[:type]]
           value = definition[:serialize].call value
         end
       else
-        self.class.schema << { name: key.to_sym, type: :string }
+        self.class.schema << { name: key, type: :string }
       end
       @data[key] = value
     end
