@@ -52,7 +52,7 @@ module Lot
     end
 
     def method_missing meth, *args, &blk
-      set_the_value(meth, args) if setting_a_value? meth
+      set_the_value(meth, args[0]) if setting_a_value? meth
       get_the_value meth
     end
 
@@ -71,11 +71,11 @@ module Lot
       value
     end
 
-    def set_the_value meth, args
+    def set_the_value meth, value
       key   = meth.to_s.gsub('=', '').to_sym
       stuff = lookup_schema_stuff_for key
       self.class.schema << { name: key, type: :string } unless stuff[:schema_record]
-      @data[key] = stuff[:definition] ? stuff[:definition][:serialize].call(args[0]) : args[0]
+      @data[key] = stuff[:definition] ? stuff[:definition][:serialize].call(value) : value
     end
 
     def lookup_schema_stuff_for key
