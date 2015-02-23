@@ -25,6 +25,15 @@ module Lot
       record.save.tap { |_| self.id = record.id }
     end
 
+    def method_missing meth, *args, &blk
+      set_the_value(meth, args[0]) if setting_a_value? meth
+      get_the_value meth
+    end
+
+    def the_data_source
+      @the_data_source ||= self.class.the_data_source
+    end
+
     class << self
 
       attr_accessor :schema
@@ -59,15 +68,6 @@ module Lot
           .map { |r| new r }
       end
 
-    end
-
-    def method_missing meth, *args, &blk
-      set_the_value(meth, args[0]) if setting_a_value? meth
-      get_the_value meth
-    end
-
-    def the_data_source
-      @the_data_source ||= self.class.the_data_source
     end
 
     private
