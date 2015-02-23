@@ -64,10 +64,8 @@ module Lot
       key   = meth.to_s.gsub('=', '').to_sym
       value = @data[key.to_s]
       stuff = lookup_schema_stuff_for key
-      if schema_record = self.class.schema.select { |x| x[:name] == key }.first
-        if definition = Lot.types[schema_record[:type]]
-          value = stuff[:definition][:deserialize].call value
-        end
+      if stuff[:definition]
+        value = stuff[:definition][:deserialize].call value
       end
       value
     end
