@@ -88,7 +88,7 @@ module Lot
     def set_the_value meth, value
       key   = pull_the_key_from meth
       stuff = lookup_schema_stuff_for key
-      self.class.schema << { name: key, type: :string } unless stuff[:schema_record]
+      self.class.schema << { name: key, type: :string } unless stuff[:field]
       @data[key] = stuff[:definition] ? stuff[:definition][:serialize].call(value)
                                       : value
     end
@@ -98,8 +98,8 @@ module Lot
     end
 
     def lookup_schema_stuff_for key
-      { schema_record: self.class.schema.select { |x| x[:name] == key }.first }.tap do |d|
-        d[:definition] = Lot.types[d[:schema_record][:type]] if d[:schema_record]
+      { field: self.class.schema.select { |x| x[:name] == key }.first }.tap do |d|
+        d[:definition] = Lot.types[d[:field][:type]] if d[:field]
       end
     end
 
