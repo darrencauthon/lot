@@ -56,6 +56,20 @@ module Lot
       get_the_value meth
     end
 
+    def self.the_data_source_for thing
+      "::#{thing}Base"
+    end
+
+    def self.the_data_source
+      @the_data_source ||= the_data_source_for(self).constantize
+    end
+
+    def the_data_source
+      @the_data_source ||= self.class.the_data_source
+    end
+
+    private
+
     def setting_a_value? meth
       meth.to_s[-1] == '='
     end
@@ -85,18 +99,6 @@ module Lot
           d[:definition] = Lot.types[d[:schema_record][:type]]
         end
       end
-    end
-
-    def self.the_data_source_for thing
-      "::#{thing}Base"
-    end
-
-    def self.the_data_source
-      @the_data_source ||= the_data_source_for(self).constantize
-    end
-
-    def the_data_source
-      @the_data_source ||= self.class.the_data_source
     end
 
   end
