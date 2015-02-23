@@ -42,10 +42,6 @@ module Lot
         @schema ||= []
       end
 
-      def the_data_source_for thing
-        "::#{thing}Base"
-      end
-
       def the_data_source
         @the_data_source ||= the_data_source_for(self).constantize
       end
@@ -66,6 +62,12 @@ module Lot
         the_data_source
           .where(record_type: self.to_s)
           .map { |r| new r }
+      end
+
+      private
+
+      def the_data_source_for thing
+        "::#{thing}Base"
       end
 
     end
