@@ -62,12 +62,9 @@ module Lot
 
     def get_the_value meth
       key   = meth.to_s.gsub('=', '').to_sym
-      value = @data[key.to_s]
+      value = @data[key]
       stuff = lookup_schema_stuff_for key
-      if stuff[:definition]
-        value = stuff[:definition][:deserialize].call value
-      end
-      value
+      stuff[:definition] ? stuff[:definition][:deserialize].call(value) : value
     end
 
     def set_the_value meth, value
