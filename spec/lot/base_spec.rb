@@ -6,6 +6,10 @@ end
 class Giraffe < Lot::Base
 end
 
+class Lion < Lot::Base
+  self.set_table_name_to 'lions'
+end
+
 types_for_lot_base_testing = [Elephant, Giraffe]
 
 describe Lot::Base do
@@ -268,6 +272,32 @@ describe Lot::Base do
 
       first_type.all.first.id.must_equal first_record.id
       second_type.all.first.id.must_equal second_record.id
+    end
+
+  end
+
+  describe "changing the base table" do
+
+    before do
+      Lion.delete_all
+      Elephant.delete_all
+      Giraffe.delete_all
+    end
+
+    it "should allow table names to be changed" do
+      Lion.table_name.must_equal 'lions'
+    end
+
+    it "should allow the saving of data to different tables" do
+      Lion.new.save
+      LionBase.connection.execute("SELECT Count(*) FROM lions")[0]['count'].to_i.must_equal 1
+      Elephant.new.save
+      Giraffe.new.save
+      LionBase.connection.execute("SELECT Count(*) FROM records")[0]['count'].to_i.must_equal 2
+    end
+
+    it "should default the table name to records" do
+      Elephant.table_name.must_equal 'records' 
     end
 
   end

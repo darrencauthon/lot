@@ -5,8 +5,9 @@ module Lot
     attr_accessor :id
 
     def self.inherited thing
+      thing.set_table_name_to 'records'
       eval("class #{the_data_source_for(thing)} < ActiveRecord::Base
-              self.table_name = 'records'
+              self.table_name = '#{thing.table_name}'
             end")
     end
 
@@ -38,6 +39,14 @@ module Lot
 
       attr_accessor :schema
 
+      attr_reader :table_name
+      def set_table_name_to table
+        @table_name = table
+        eval("class #{the_data_source_for(self)} < ActiveRecord::Base
+                self.table_name = '#{@table_name}'
+              end")
+      end
+
       def schema
         @schema ||= []
       end
@@ -63,8 +72,6 @@ module Lot
           .where(record_type: self.to_s)
           .map { |r| new r }
       end
-
-      private
 
       def the_data_source_for thing
         "::#{thing}Base"
