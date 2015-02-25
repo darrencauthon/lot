@@ -6,9 +6,6 @@ module Lot
 
     def self.inherited thing
       thing.set_table_name_to 'records'
-      eval("class #{the_data_source_for(thing)} < ActiveRecord::Base
-              self.table_name = '#{thing.table_name}'
-            end")
     end
 
     def initialize source = nil
