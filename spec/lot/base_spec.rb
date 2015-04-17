@@ -94,6 +94,12 @@ describe Lot::Base do
 
       end
 
+      describe "the default schema" do
+        it "should be nil, relying on the base class to reimplement it" do
+          type.default_schema.nil?.must_equal true
+        end
+      end
+
       describe "the schema" do
 
         before do
@@ -103,8 +109,19 @@ describe Lot::Base do
 
         describe "starting from nothing" do
 
-          it "should default to an empty schema" do
-            type.schema.count.must_equal 0
+          describe "there is no default schema" do
+            before { type.stubs(:default_schema).returns nil }
+            it "should default to an empty schema" do
+              type.schema.count.must_equal 0
+            end
+          end
+
+          describe "there is a default schema" do
+            let(:default) { [{}] }
+            before { type.stubs(:default_schema).returns default }
+            it "should return the default" do
+              type.schema.must_be_same_as default
+            end
           end
 
           it "should add fields to the schema when they are used for the first time" do

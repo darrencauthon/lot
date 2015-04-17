@@ -44,8 +44,12 @@ module Lot
               end")
       end
 
+      def default_schema
+        nil
+      end
+
       def schema
-        @schema ||= []
+        @schema ||= default_schema || []
       end
 
       def the_data_source

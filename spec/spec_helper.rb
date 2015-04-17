@@ -1,7 +1,7 @@
+require_relative '../lib/lot'
 require 'minitest/autorun'
 require 'minitest/spec'
-
-require_relative '../lib/lot'
+require 'mocha/setup'
 
 def setup_db options = {}
   options.merge!( {
