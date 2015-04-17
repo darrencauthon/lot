@@ -69,9 +69,12 @@ module Lot
       end
 
       def all
+        the_data_source_query.map { |r| new r }
+      end
+
+      def the_data_source_query
         the_data_source
           .where(record_type: self.to_s)
-          .map { |r| new r }
       end
 
       def the_data_source_for thing

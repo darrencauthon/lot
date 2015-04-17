@@ -262,6 +262,34 @@ describe Lot::Base do
 
   end
 
+  describe "all query" do
+
+    let(:first_type)  { types_for_lot_base_testing[0] }
+    let(:second_type) { types_for_lot_base_testing[1] }
+
+    before do
+      setup_db
+      types_for_lot_base_testing.each { |t| t.delete_all }
+    end
+
+    it "should return a query based on the record type" do
+      first_record = first_type.new.save
+      second_record = second_type.new.save
+
+      first_type.the_data_source_query.count.must_equal 1
+      second_type.the_data_source_query.count.must_equal 1
+    end
+
+    it "should return the active record objects" do
+      first_record = first_type.new.save
+      second_record = second_type.new.save
+
+      first_type.the_data_source_query.first.is_a?(ActiveRecord::Base).must_equal true
+      second_type.the_data_source_query.first.is_a?(ActiveRecord::Base).must_equal true
+    end
+
+  end
+
   describe "all" do
 
     let(:first_type)  { types_for_lot_base_testing[0] }
