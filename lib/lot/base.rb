@@ -4,7 +4,7 @@ module Lot
 
     attr_accessor :id
 
-    attr_reader :record_id
+    attr_reader :record_uuid
 
     def self.inherited thing
       thing.set_table_name_to 'records'
@@ -12,11 +12,11 @@ module Lot
 
     def initialize source = nil
       if source
-        @data      = HashWithIndifferentAccess.new(source.data_as_hstore || {})
-        @id        = source.id
-        @record_id = source.record_id
+        @data        = HashWithIndifferentAccess.new(source.data_as_hstore || {})
+        @id          = source.id
+        @record_uuid = source.record_id
       else
-        @record_id = SecureRandom.uuid
+        @record_uuid = SecureRandom.uuid
       end
       @data ||= HashWithIndifferentAccess.new({})
     end
@@ -25,13 +25,25 @@ module Lot
       @dirties = nil
       record = the_data_source.where(id: self.id).first ||
                the_data_source.new.tap { |r| r.record_type = self.class.to_s }
+      old_data = record.data_as_hstore || {}
       record.data_as_hstore = @data
-      record.record_id = self.record_id
+      record.record_id = self.record_uuid
       record.save.tap { |_| self.id = record.id }
+      RecordHistory.create(record_type: self.class.to_s.underscore,
+                           record_id: self.id,
+                           record_uuid: self.record_uuid,
+                           old_data: old_data,
+                           new_data: @data)
     end
 
     def dirty_properties
       @dirties ||= []
+    end
+
+    def history
+      RecordHistory.where(record_type: self.class.to_s.underscore,
+                          record_id:   self.id,
+                          record_uuid: self.record_uuid)
     end
 
     def method_missing meth, *args, &blk

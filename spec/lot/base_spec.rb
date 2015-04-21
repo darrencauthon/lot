@@ -21,6 +21,7 @@ describe Lot::Base do
       before do
         setup_db
         type.delete_all
+        Lot::RecordHistory.delete_all
       end
 
       describe "creating the data store underneath the object" do
@@ -28,7 +29,7 @@ describe Lot::Base do
         it "should create a base class for the object in question" do
           eval("#{type}Base") # this will throw if it does not exist
         end
-        
+
         it "should be an active record base" do
           eval("#{type}Base").new.is_a?(ActiveRecord::Base).must_equal true
         end
@@ -145,23 +146,108 @@ describe Lot::Base do
         end
       end
 
-      describe "the record id" do
+      describe "the record uuid" do
 
         it "should set a unique record id" do
           id = SecureRandom.uuid
           SecureRandom.stubs(:uuid).returns id
           record = type.new
-          record.record_id.must_equal id
+          record.record_uuid.must_equal id
         end
 
-        it "should persist the record id" do
+        it "should persist the record uuid" do
           record = type.new
           record.save
-          id        = record.id
-          record_id = record.record_id
+          id          = record.id
+          record_uuid = record.record_uuid
 
           record = type.find id
-          record.record_id.must_equal record_id
+          record.record_uuid.must_equal record_uuid
+        end
+
+      end
+
+      describe "the history" do
+
+        it "should default a record to having no history" do
+          record = type.new
+          record.history.count.must_equal 0
+        end
+
+        it "should stamp a history of the record being created" do
+          record = type.new
+          record.save
+
+          record.history.count.must_equal 1
+        end
+
+        describe "the historical record" do
+
+          let(:key)   { SecureRandom.uuid }
+          let(:value) { SecureRandom.uuid }
+
+          let(:record) do
+            type.new.tap do |r|
+              r.send("#{key}=".to_sym, value)
+              r.save
+            end
+          end
+
+          it "should include the record type" do
+            record.history[0].record_type.must_equal type.to_s.underscore
+          end
+
+          it "should include the id" do
+            record.history[0].record_id.must_equal record.id
+          end
+
+          it "should include the record uuid" do
+            record.history[0].record_uuid.must_equal record.record_uuid
+          end
+
+          it "should include the old data" do
+            record.history[0].old_data[key].nil?.must_equal true
+          end
+
+          it "should include the new data" do
+            record.history[0].new_data[key].must_equal value
+          end
+
+          describe "stamping more history" do
+            let(:new_value) { SecureRandom.uuid }
+
+            before do
+              record.send("#{key}=".to_sym, new_value)
+              record.save
+            end
+
+            it "should include the old data" do
+              record.history[1].old_data[key].must_equal value
+            end
+
+            it "should include the new data" do
+              record.history[1].new_data[key].must_equal new_value
+            end
+
+          end
+
+          describe "histories were created for other objects" do
+            before do
+              Lot::RecordHistory.create(record_type: record.type.to_s.underscore)
+              Lot::RecordHistory.create(record_id:   record.id)
+              Lot::RecordHistory.create(record_uuid: record.record_uuid)
+            end
+
+            it "should only return the history for the current record" do
+              record.history.count.must_equal 1
+              record.history.first.tap do |history|
+                history.record_type.must_equal type.to_s.underscore
+                history.record_id.must_equal record.id
+                history.record_uuid.must_equal record.record_uuid
+              end
+            end
+          end
+
         end
 
       end
