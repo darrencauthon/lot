@@ -192,6 +192,10 @@ describe Lot::Base do
             record.history[0].record_type.must_equal type.to_s.underscore
           end
 
+          it "should include the id" do
+            record.history[0].record_id.must_equal record.id
+          end
+
         end
 
       end
