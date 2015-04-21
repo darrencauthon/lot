@@ -21,6 +21,10 @@ module Lot
       @data ||= HashWithIndifferentAccess.new({})
     end
 
+    def record_type
+      self.class.to_s.underscore.gsub(' ', '_')
+    end
+
     def save_by saver
       @dirties = nil
       record = the_data_source.where(id: self.id).first ||

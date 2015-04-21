@@ -26,6 +26,18 @@ describe Lot::Base do
         Lot::RecordHistory.delete_all
       end
 
+      describe "getting the record type" do
+        it "should record the underscored type" do
+          type.new.record_type.must_equal type.to_s.underscore
+        end
+
+        it "should check for the exact underscore value (faking to verify the _)" do
+          record = type.new
+          record.stubs(:class).returns "The Rain In Spain"
+          record.record_type.must_equal 'the_rain_in_spain'
+        end
+      end
+
       describe "creating the data store underneath the object" do
 
         it "should create a base class for the object in question" do
@@ -364,7 +376,7 @@ describe Lot::Base do
                                            }
               type.schema << { name: field, type: :something_else }
             end
-            
+
             it "should run the value through the deserializer before returning it" do
               type.new.send(field).must_equal '.'
             end
