@@ -29,7 +29,7 @@ describe Lot::Base do
         it "should create a base class for the object in question" do
           eval("#{type}Base") # this will throw if it does not exist
         end
-        
+
         it "should be an active record base" do
           eval("#{type}Base").new.is_a?(ActiveRecord::Base).must_equal true
         end
