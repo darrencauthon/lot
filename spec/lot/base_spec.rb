@@ -196,6 +196,10 @@ describe Lot::Base do
             record.history[0].record_id.must_equal record.id
           end
 
+          it "should include the record uuid" do
+            record.history[0].record_uuid.must_equal record.record_uuid
+          end
+
         end
 
       end

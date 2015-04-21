@@ -28,7 +28,7 @@ module Lot
       record.data_as_hstore = @data
       record.record_id = self.record_uuid
       record.save.tap { |_| self.id = record.id }
-      history << Struct.new(:record_type, :record_id).new(self.class.to_s.underscore, self.id)
+      history << Struct.new(:record_type, :record_id, :record_uuid).new(self.class.to_s.underscore, self.id, self.record_uuid)
     end
 
     def dirty_properties
