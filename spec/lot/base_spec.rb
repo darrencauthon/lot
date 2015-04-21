@@ -130,6 +130,19 @@ describe Lot::Base do
 
           record.dirty_properties.count.must_equal 0
         end
+
+        it "should not mark a field as dirty if the change is not actually a change" do
+          field = SecureRandom.uuid.to_sym
+          value = SecureRandom.uuid
+
+          record = type.new
+          record.send("#{field}=", value)
+          record.save
+
+          record.send("#{field}=", value)
+
+          record.dirty_properties.count.must_equal 0
+        end
       end
 
       describe "the default schema" do

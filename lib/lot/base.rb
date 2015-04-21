@@ -105,9 +105,11 @@ module Lot
       key   = pull_the_key_from meth
       stuff = lookup_schema_stuff_for key
       self.class.schema << { name: key, type: :string } unless stuff[:field]
-      @data[key] = stuff[:definition] ? stuff[:definition][:serialize].call(value)
-                                      : value
-      dirty_properties << key unless dirty_properties.include?(key)
+      value = stuff[:definition] ? stuff[:definition][:serialize].call(value)
+                                 : value
+      the_value_did_not_change = value == get_the_value(meth)
+      @data[key] = value
+      dirty_properties << key unless the_value_did_not_change || dirty_properties.include?(key)
     end
 
     def pull_the_key_from meth
