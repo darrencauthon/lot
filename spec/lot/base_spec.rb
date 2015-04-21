@@ -109,6 +109,19 @@ describe Lot::Base do
 
       end
 
+      describe "trying to save without a saver" do
+        it "should not save the record" do
+          record = type.new
+          record.save_by nil
+          type.count.must_equal 0
+        end
+
+        it "should return false" do
+          record = type.new
+          record.save_by(nil).must_equal false
+        end
+      end
+
       describe "tracking changed fields" do
         it "should default a new object to having no dirty properties" do
           record = type.new

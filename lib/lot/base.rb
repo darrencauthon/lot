@@ -26,6 +26,7 @@ module Lot
     end
 
     def save_by saver
+      return false unless saver
       @dirties = nil
       record = the_data_source.where(id: self.id).first ||
                the_data_source.new.tap { |r| r.record_type = self.class.to_s }
