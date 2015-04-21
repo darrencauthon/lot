@@ -154,6 +154,16 @@ describe Lot::Base do
           record.record_id.must_equal id
         end
 
+        it "should persist the record id" do
+          record = type.new
+          record.save
+          id        = record.id
+          record_id = record.record_id
+
+          record = type.find id
+          record.record_id.must_equal record_id
+        end
+
       end
 
       describe "the default schema" do
