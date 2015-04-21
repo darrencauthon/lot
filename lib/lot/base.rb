@@ -106,7 +106,7 @@ module Lot
       self.class.schema << { name: key, type: :string } unless stuff[:field]
       @data[key] = stuff[:definition] ? stuff[:definition][:serialize].call(value)
                                       : value
-      dirty_properties << key
+      dirty_properties << key unless dirty_properties.include?(key)
     end
 
     def pull_the_key_from meth

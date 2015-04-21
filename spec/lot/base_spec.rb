@@ -109,6 +109,17 @@ describe Lot::Base do
           record.dirty_properties.count.must_equal 1
           record.dirty_properties.first.must_be_same_as field
         end
+
+        it "should keep a unique set of changed properties, if a property is changed twice" do
+          field = SecureRandom.uuid.to_sym
+
+          record = type.new
+          record.send("#{field}=", SecureRandom.uuid)
+          record.send("#{field}=", SecureRandom.uuid)
+
+          record.dirty_properties.count.must_equal 1
+          record.dirty_properties.first.must_be_same_as field
+        end
       end
 
       describe "the default schema" do
