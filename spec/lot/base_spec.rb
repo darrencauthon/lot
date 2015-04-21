@@ -94,6 +94,57 @@ describe Lot::Base do
 
       end
 
+      describe "tracking changed fields" do
+        it "should default a new object to having no dirty properties" do
+          record = type.new
+          record.dirty_properties.count.must_equal 0
+        end
+
+        it "should track the properties that are changed for an object" do
+          field = SecureRandom.uuid.to_sym
+
+          record = type.new
+          record.send("#{field}=", SecureRandom.uuid)
+
+          record.dirty_properties.count.must_equal 1
+          record.dirty_properties.first.must_be_same_as field
+        end
+
+        it "should keep a unique set of changed properties, if a property is changed twice" do
+          field = SecureRandom.uuid.to_sym
+
+          record = type.new
+          record.send("#{field}=", SecureRandom.uuid)
+          record.send("#{field}=", SecureRandom.uuid)
+
+          record.dirty_properties.count.must_equal 1
+          record.dirty_properties.first.must_be_same_as field
+        end
+
+        it "should remove the dirty fields after the save" do
+          field = SecureRandom.uuid.to_sym
+
+          record = type.new
+          record.send("#{field}=", SecureRandom.uuid)
+          record.save
+
+          record.dirty_properties.count.must_equal 0
+        end
+
+        it "should not mark a field as dirty if the change is not actually a change" do
+          field = SecureRandom.uuid.to_sym
+          value = SecureRandom.uuid
+
+          record = type.new
+          record.send("#{field}=", value)
+          record.save
+
+          record.send("#{field}=", value)
+
+          record.dirty_properties.count.must_equal 0
+        end
+      end
+
       describe "the default schema" do
         it "should be nil, relying on the base class to reimplement it" do
           type.default_schema.nil?.must_equal true

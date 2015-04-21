@@ -17,10 +17,15 @@ module Lot
     end
 
     def save
+      @dirties = nil
       record = the_data_source.where(id: self.id).first ||
                the_data_source.new.tap { |r| r.record_type = self.class.to_s }
       record.data_as_hstore = @data
       record.save.tap { |_| self.id = record.id }
+    end
+
+    def dirty_properties
+      @dirties ||= []
     end
 
     def method_missing meth, *args, &blk
@@ -100,8 +105,11 @@ module Lot
       key   = pull_the_key_from meth
       stuff = lookup_schema_stuff_for key
       self.class.schema << { name: key, type: :string } unless stuff[:field]
-      @data[key] = stuff[:definition] ? stuff[:definition][:serialize].call(value)
-                                      : value
+      value = stuff[:definition] ? stuff[:definition][:serialize].call(value)
+                                 : value
+      the_value_did_not_change = value == get_the_value(meth)
+      @data[key] = value
+      dirty_properties << key unless the_value_did_not_change || dirty_properties.include?(key)
     end
 
     def pull_the_key_from meth
