@@ -175,10 +175,23 @@ describe Lot::Base do
 
         it "should stamp a history of the record being created" do
           record = type.new
-          record.history.count.must_equal 0
           record.save
 
           record.history.count.must_equal 1
+        end
+
+        describe "the historical record" do
+
+          let(:record) do
+            type.new.tap do |r|
+              r.save
+            end
+          end
+
+          it "should include the record type" do
+            record.history[0].record_type.must_equal type.to_s.underscore
+          end
+
         end
 
       end

@@ -22,7 +22,7 @@ module Lot
     end
 
     def save
-      (@history || []) << nil
+      history << Struct.new(:record_type).new(self.class.to_s.underscore)
       @dirties = nil
       record = the_data_source.where(id: self.id).first ||
                the_data_source.new.tap { |r| r.record_type = self.class.to_s }
