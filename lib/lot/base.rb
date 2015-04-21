@@ -12,8 +12,8 @@ module Lot
 
     def initialize source = nil
       if source
-        @data = HashWithIndifferentAccess.new(source.data_as_hstore || {})
-        @id   = source.id
+        @data      = HashWithIndifferentAccess.new(source.data_as_hstore || {})
+        @id        = source.id
         @record_id = source.record_id
       else
         @record_id = SecureRandom.uuid
