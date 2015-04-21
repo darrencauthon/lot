@@ -23,6 +23,10 @@ module Lot
       record.save.tap { |_| self.id = record.id }
     end
 
+    def dirty_properties
+      []
+    end
+
     def method_missing meth, *args, &blk
       set_the_value(meth, args[0]) if setting_a_value? meth
       get_the_value meth

@@ -94,6 +94,13 @@ describe Lot::Base do
 
       end
 
+      describe "tracking changed fields" do
+        it "should default a new object to having no dirty properties" do
+          record = type.new
+          record.dirty_properties.count.must_equal 0
+        end
+      end
+
       describe "the default schema" do
         it "should be nil, relying on the base class to reimplement it" do
           type.default_schema.nil?.must_equal true
