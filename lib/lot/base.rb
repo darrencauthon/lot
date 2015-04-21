@@ -21,7 +21,12 @@ module Lot
       @data ||= HashWithIndifferentAccess.new({})
     end
 
-    def save
+    def record_type
+      self.class.to_s.underscore.gsub(' ', '_')
+    end
+
+    def save_by saver
+      return false unless saver
       @dirties = nil
       record = the_data_source.where(id: self.id).first ||
                the_data_source.new.tap { |r| r.record_type = self.class.to_s }
@@ -29,11 +34,14 @@ module Lot
       record.data_as_hstore = @data
       record.record_id = self.record_uuid
       record.save.tap { |_| self.id = record.id }
-      RecordHistory.create(record_type: self.class.to_s.underscore,
-                           record_id: self.id,
+      RecordHistory.create(record_type: self.record_type,
+                           record_id:   self.id,
                            record_uuid: self.record_uuid,
-                           old_data: old_data,
-                           new_data: @data)
+                           old_data:    old_data,
+                           new_data:    @data,
+                           saver_id:    saver.id,
+                           saver_uuid:  saver.record_uuid,
+                           saver_type:  saver.record_type)
     end
 
     def dirty_properties
@@ -41,7 +49,7 @@ module Lot
     end
 
     def history
-      RecordHistory.where(record_type: self.class.to_s.underscore,
+      RecordHistory.where(record_type: self.record_type,
                           record_id:   self.id,
                           record_uuid: self.record_uuid)
     end
