@@ -28,8 +28,7 @@ module Lot
     def save_by saver
       return false unless saver
       @dirties = nil
-      record = the_data_source.where(id: self.id).first ||
-               the_data_source.new.tap { |r| r.record_type = self.class.to_s }
+      record = find_or_new_up_record
       stamp_the_history_for(record, saver) do
         record.data_as_hstore = @data
         record.record_id      = self.record_uuid
@@ -121,6 +120,11 @@ module Lot
                              saver_uuid:  saver.record_uuid,
                              saver_type:  saver.record_type)
       end
+    end
+
+    def find_or_new_up_record
+      the_data_source.where(id: self.id).first ||
+      the_data_source.new.tap { |r| r.record_type = self.class.to_s }
     end
 
     def setting_a_value? meth
