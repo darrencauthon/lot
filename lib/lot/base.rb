@@ -30,18 +30,11 @@ module Lot
       @dirties = nil
       record = the_data_source.where(id: self.id).first ||
                the_data_source.new.tap { |r| r.record_type = self.class.to_s }
-      old_data = record.data_as_hstore || {}
-      record.data_as_hstore = @data
-      record.record_id = self.record_uuid
-      record.save.tap { |_| self.id = record.id }
-      RecordHistory.create(record_type: self.record_type,
-                           record_id:   self.id,
-                           record_uuid: self.record_uuid,
-                           old_data:    old_data,
-                           new_data:    @data,
-                           saver_id:    saver.id,
-                           saver_uuid:  saver.record_uuid,
-                           saver_type:  saver.record_type)
+      stamp_the_history_for(record, saver) do
+        record.data_as_hstore = @data
+        record.record_id = self.record_uuid
+        record.save.tap { |_| self.id = record.id }
+      end
     end
 
     def dirty_properties
@@ -115,6 +108,19 @@ module Lot
     end
 
     private
+
+    def stamp_the_history_for record, saver
+      old_data = record.data_as_hstore || {}
+      yield
+      RecordHistory.create(record_type: self.record_type,
+                           record_id:   self.id,
+                           record_uuid: self.record_uuid,
+                           old_data:    old_data,
+                           new_data:    @data,
+                           saver_id:    saver.id,
+                           saver_uuid:  saver.record_uuid,
+                           saver_type:  saver.record_type)
+    end
 
     def setting_a_value? meth
       meth.to_s[-1] == '='
