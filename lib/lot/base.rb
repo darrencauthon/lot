@@ -17,6 +17,7 @@ module Lot
     end
 
     def save
+      @dirties = nil
       record = the_data_source.where(id: self.id).first ||
                the_data_source.new.tap { |r| r.record_type = self.class.to_s }
       record.data_as_hstore = @data
