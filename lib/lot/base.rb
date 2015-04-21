@@ -32,7 +32,7 @@ module Lot
                the_data_source.new.tap { |r| r.record_type = self.class.to_s }
       stamp_the_history_for(record, saver) do
         record.data_as_hstore = @data
-        record.record_id = self.record_uuid
+        record.record_id      = self.record_uuid
         record.save.tap { |_| self.id = record.id }
       end
     end
