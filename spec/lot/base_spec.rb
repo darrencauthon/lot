@@ -14,7 +14,7 @@ types_for_lot_base_testing = [Elephant, Giraffe]
 
 describe Lot::Base do
 
-  let(:saver) { Object.new }
+  let(:saver) { Struct.new(:record_type, :id, :record_uuid).new(SecureRandom.uuid, rand(100), SecureRandom.uuid) }
 
   types_for_lot_base_testing.each do |type|
 
@@ -244,6 +244,23 @@ describe Lot::Base do
             end
 
           end
+
+          describe "stamping who made the change" do
+
+            it "should include saver's id" do
+              record.history[0].saver_id.must_equal saver.id
+            end
+
+            it "should include saver's uuid" do
+              record.history[0].saver_uuid.must_equal saver.record_uuid
+            end
+
+            it "should include saver's type" do
+              record.history[0].saver_type.must_equal saver.record_type
+            end
+
+          end
+
 
           describe "histories were created for other objects" do
             before do

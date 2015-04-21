@@ -37,7 +37,11 @@ module Lot
                            record_id: self.id,
                            record_uuid: self.record_uuid,
                            old_data: old_data,
-                           new_data: @data)
+                           new_data: @data,
+                           saver_id: saver.id,
+                           saver_uuid: saver.record_uuid,
+                           saver_type: saver.record_type,
+                          )
     end
 
     def dirty_properties
