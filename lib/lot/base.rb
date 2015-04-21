@@ -111,15 +111,16 @@ module Lot
 
     def stamp_the_history_for record, saver
       old_data = record.data_as_hstore || {}
-      yield
-      RecordHistory.create(record_type: self.record_type,
-                           record_id:   self.id,
-                           record_uuid: self.record_uuid,
-                           old_data:    old_data,
-                           new_data:    @data,
-                           saver_id:    saver.id,
-                           saver_uuid:  saver.record_uuid,
-                           saver_type:  saver.record_type)
+      yield.tap do
+        RecordHistory.create(record_type: self.record_type,
+                             record_id:   self.id,
+                             record_uuid: self.record_uuid,
+                             old_data:    old_data,
+                             new_data:    @data,
+                             saver_id:    saver.id,
+                             saver_uuid:  saver.record_uuid,
+                             saver_type:  saver.record_type)
+      end
     end
 
     def setting_a_value? meth

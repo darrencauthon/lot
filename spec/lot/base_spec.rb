@@ -462,6 +462,13 @@ describe Lot::Base do
       record
     end
 
+    it "should return the result of the save operation" do
+      expected = Object.new
+      record = first_type.new
+      eval("#{first_type}Base").any_instance.stubs(:save).returns expected
+      record.save_by(saver).must_be_same_as expected
+    end
+
   end
 
   describe "all query" do
