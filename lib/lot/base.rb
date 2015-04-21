@@ -33,7 +33,7 @@ module Lot
       record.data_as_hstore = @data
       record.record_id = self.record_uuid
       record.save.tap { |_| self.id = record.id }
-      RecordHistory.create(record_type: self.class.to_s.underscore,
+      RecordHistory.create(record_type: self.record_type,
                            record_id: self.id,
                            record_uuid: self.record_uuid,
                            old_data: old_data,
@@ -45,7 +45,7 @@ module Lot
     end
 
     def history
-      RecordHistory.where(record_type: self.class.to_s.underscore,
+      RecordHistory.where(record_type: self.record_type,
                           record_id:   self.id,
                           record_uuid: self.record_uuid)
     end
