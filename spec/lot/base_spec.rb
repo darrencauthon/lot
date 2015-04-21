@@ -182,8 +182,12 @@ describe Lot::Base do
 
         describe "the historical record" do
 
+          let(:key)   { SecureRandom.uuid }
+          let(:value) { SecureRandom.uuid }
+
           let(:record) do
             type.new.tap do |r|
+              r.send("#{key}=".to_sym, value)
               r.save
             end
           end
@@ -198,6 +202,32 @@ describe Lot::Base do
 
           it "should include the record uuid" do
             record.history[0].record_uuid.must_equal record.record_uuid
+          end
+
+          it "should include the old data" do
+            record.history[0].old_data[key].nil?.must_equal true
+          end
+
+          it "should include the new data" do
+            record.history[0].new_data[key].must_equal value
+          end
+
+          describe "stamping more history" do
+            let(:new_value) { SecureRandom.uuid }
+
+            before do
+              record.send("#{key}=".to_sym, new_value)
+              record.save
+            end
+
+            it "should include the old data" do
+              record.history[1].old_data[key].must_equal value
+            end
+
+            it "should include the new data" do
+              record.history[1].new_data[key].must_equal new_value
+            end
+
           end
 
         end

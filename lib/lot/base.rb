@@ -25,10 +25,11 @@ module Lot
       @dirties = nil
       record = the_data_source.where(id: self.id).first ||
                the_data_source.new.tap { |r| r.record_type = self.class.to_s }
+      old_data = record.data_as_hstore || {}
       record.data_as_hstore = @data
       record.record_id = self.record_uuid
       record.save.tap { |_| self.id = record.id }
-      history << Struct.new(:record_type, :record_id, :record_uuid).new(self.class.to_s.underscore, self.id, self.record_uuid)
+      history << Struct.new(:record_type, :record_id, :record_uuid, :old_data, :new_data).new(self.class.to_s.underscore, self.id, self.record_uuid, old_data, @data)
     end
 
     def dirty_properties
