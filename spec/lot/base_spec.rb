@@ -173,6 +173,14 @@ describe Lot::Base do
           record.history.count.must_equal 0
         end
 
+        it "should stamp a history of the record being created" do
+          record = type.new
+          record.history.count.must_equal 0
+          record.save
+
+          record.history.count.must_equal 1
+        end
+
       end
 
       describe "the default schema" do
@@ -428,4 +436,4 @@ describe Lot::Base do
 
   end
 
-enddefaul
+end

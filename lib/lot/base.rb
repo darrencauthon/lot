@@ -22,6 +22,7 @@ module Lot
     end
 
     def save
+      (@history || []) << nil
       @dirties = nil
       record = the_data_source.where(id: self.id).first ||
                the_data_source.new.tap { |r| r.record_type = self.class.to_s }
@@ -35,7 +36,7 @@ module Lot
     end
 
     def history
-      []
+      @history ||= []
     end
 
     def method_missing meth, *args, &blk
