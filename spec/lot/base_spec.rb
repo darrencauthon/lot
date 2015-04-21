@@ -14,6 +14,8 @@ types_for_lot_base_testing = [Elephant, Giraffe]
 
 describe Lot::Base do
 
+  let(:saver) { Object.new }
+
   types_for_lot_base_testing.each do |type|
 
     describe "working with data objects (#{type})" do
@@ -49,7 +51,7 @@ describe Lot::Base do
         it "should return the number of records" do
           base_type = eval("#{type}Base")
           base_type.delete_all
-          3.times { type.new.save }
+          3.times { type.new.save_by(saver) }
           type.count.must_equal 3
         end
       end
@@ -67,7 +69,7 @@ describe Lot::Base do
 
         it "should allow me to save records" do
           record = type.new
-          record.save
+          record.save_by(saver)
           type.count.must_equal 1
         end
 
@@ -75,7 +77,7 @@ describe Lot::Base do
           name = SecureRandom.uuid
           record = type.new
           record.name = name
-          record.save
+          record.save_by(saver)
 
           record = type.find record.id
           record.name.must_equal name
@@ -86,7 +88,7 @@ describe Lot::Base do
           record = type.new
           record.city  = city
           record.state = state
-          record.save
+          record.save_by(saver)
 
           record = type.find record.id
           record.city.must_equal city
@@ -127,7 +129,7 @@ describe Lot::Base do
 
           record = type.new
           record.send("#{field}=", SecureRandom.uuid)
-          record.save
+          record.save_by(saver)
 
           record.dirty_properties.count.must_equal 0
         end
@@ -138,7 +140,7 @@ describe Lot::Base do
 
           record = type.new
           record.send("#{field}=", value)
-          record.save
+          record.save_by(saver)
 
           record.send("#{field}=", value)
 
@@ -157,7 +159,7 @@ describe Lot::Base do
 
         it "should persist the record uuid" do
           record = type.new
-          record.save
+          record.save_by(saver)
           id          = record.id
           record_uuid = record.record_uuid
 
@@ -176,7 +178,7 @@ describe Lot::Base do
 
         it "should stamp a history of the record being created" do
           record = type.new
-          record.save
+          record.save_by(saver)
 
           record.history.count.must_equal 1
         end
@@ -189,7 +191,7 @@ describe Lot::Base do
           let(:record) do
             type.new.tap do |r|
               r.send("#{key}=".to_sym, value)
-              r.save
+              r.save_by(saver)
             end
           end
 
@@ -218,7 +220,7 @@ describe Lot::Base do
 
             before do
               record.send("#{key}=".to_sym, new_value)
-              record.save
+              record.save_by(saver)
             end
 
             it "should include the old data" do
@@ -287,7 +289,7 @@ describe Lot::Base do
 
             record = type.new
             record.send("#{field}=".to_sym, SecureRandom.uuid)
-            record.save
+            record.save_by(saver)
 
             type.schema.count.must_equal 1
             type.schema[0][:name].must_equal field
@@ -299,7 +301,7 @@ describe Lot::Base do
             record = type.new
             record.send("#{field}=".to_sym, SecureRandom.uuid)
             record.send("#{field}=".to_sym, SecureRandom.uuid)
-            record.save
+            record.save_by(saver)
 
             type.schema.count.must_equal 1
           end
@@ -311,7 +313,7 @@ describe Lot::Base do
             record = type.new
             record.send("#{field1}=".to_sym, SecureRandom.uuid)
             record.send("#{field2}=".to_sym, SecureRandom.uuid)
-            record.save
+            record.save_by(saver)
 
             type.schema.count.must_equal 2
             type.schema[0][:name].must_equal field1
@@ -323,7 +325,7 @@ describe Lot::Base do
 
             record = type.new
             record.send("#{field}=".to_sym, SecureRandom.uuid)
-            record.save
+            record.save_by(saver)
 
             type.schema.count.must_equal 1
             type.schema[0][:type].must_equal :string
@@ -371,7 +373,7 @@ describe Lot::Base do
               record = type.new
               value  = SecureRandom.uuid
               record.send("#{field}=".to_sym, value)
-              record.save
+              record.save_by(saver)
 
               record = type.find record.id
               record.send(field).must_equal ".#{value}."
@@ -398,8 +400,8 @@ describe Lot::Base do
     end
 
     it "should keep the counts separate" do
-      first_record = first_type.new.save
-      second_record = second_type.new.save
+      first_record = first_type.new.save_by(saver)
+      second_record = second_type.new.save_by(saver)
 
       first_type.count.must_equal 1
       second_type.count.must_equal 1
@@ -407,9 +409,9 @@ describe Lot::Base do
 
     it "should update the record after it has been created" do
       record = first_type.new
-      record.save
+      record.save_by(saver)
       record.name = 'something'
-      record.save
+      record.save_by(saver)
 
       first_type.count.must_equal 1
 
@@ -431,16 +433,16 @@ describe Lot::Base do
     end
 
     it "should return a query based on the record type" do
-      first_record = first_type.new.save
-      second_record = second_type.new.save
+      first_record = first_type.new.save_by(saver)
+      second_record = second_type.new.save_by(saver)
 
       first_type.the_data_source_query.count.must_equal 1
       second_type.the_data_source_query.count.must_equal 1
     end
 
     it "should return the active record objects" do
-      first_record = first_type.new.save
-      second_record = second_type.new.save
+      first_record = first_type.new.save_by(saver)
+      second_record = second_type.new.save_by(saver)
 
       first_type.the_data_source_query.first.is_a?(ActiveRecord::Base).must_equal true
       second_type.the_data_source_query.first.is_a?(ActiveRecord::Base).must_equal true
@@ -459,8 +461,8 @@ describe Lot::Base do
     end
 
     it "should return the appropriate records" do
-      first_record = first_type.new.save
-      second_record = second_type.new.save
+      first_record = first_type.new.save_by(saver)
+      second_record = second_type.new.save_by(saver)
 
       first_type.all.count.must_equal 1
       second_type.all.count.must_equal 1
@@ -468,10 +470,10 @@ describe Lot::Base do
 
     it "should return the records for each" do
       first_record = first_type.new
-      first_record.save
+      first_record.save_by(saver)
 
       second_record = second_type.new
-      second_record.save
+      second_record.save_by(saver)
 
       first_type.all.first.id.must_equal first_record.id
       second_type.all.first.id.must_equal second_record.id
@@ -492,10 +494,10 @@ describe Lot::Base do
     end
 
     it "should allow the saving of data to different tables" do
-      Lion.new.save
+      Lion.new.save_by(saver)
       LionBase.connection.execute("SELECT Count(*) FROM lions")[0]['count'].to_i.must_equal 1
-      Elephant.new.save
-      Giraffe.new.save
+      Elephant.new.save_by(saver)
+      Giraffe.new.save_by(saver)
       LionBase.connection.execute("SELECT Count(*) FROM records")[0]['count'].to_i.must_equal 2
     end
 
