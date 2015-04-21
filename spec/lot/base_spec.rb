@@ -99,6 +99,16 @@ describe Lot::Base do
           record = type.new
           record.dirty_properties.count.must_equal 0
         end
+
+        it "should track the properties that are changed for an object" do
+          field = SecureRandom.uuid.to_sym
+
+          record = type.new
+          record.send("#{field}=", SecureRandom.uuid)
+
+          record.dirty_properties.count.must_equal 1
+          record.dirty_properties.first.must_be_same_as field
+        end
       end
 
       describe "the default schema" do

@@ -24,7 +24,7 @@ module Lot
     end
 
     def dirty_properties
-      []
+      @dirties ||= []
     end
 
     def method_missing meth, *args, &blk
@@ -106,6 +106,7 @@ module Lot
       self.class.schema << { name: key, type: :string } unless stuff[:field]
       @data[key] = stuff[:definition] ? stuff[:definition][:serialize].call(value)
                                       : value
+      dirty_properties << key
     end
 
     def pull_the_key_from meth
