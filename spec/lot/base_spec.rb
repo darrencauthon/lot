@@ -145,23 +145,23 @@ describe Lot::Base do
         end
       end
 
-      describe "the record id" do
+      describe "the record uuid" do
 
         it "should set a unique record id" do
           id = SecureRandom.uuid
           SecureRandom.stubs(:uuid).returns id
           record = type.new
-          record.record_id.must_equal id
+          record.record_uuid.must_equal id
         end
 
-        it "should persist the record id" do
+        it "should persist the record uuid" do
           record = type.new
           record.save
-          id        = record.id
-          record_id = record.record_id
+          id          = record.id
+          record_uuid = record.record_uuid
 
           record = type.find id
-          record.record_id.must_equal record_id
+          record.record_uuid.must_equal record_uuid
         end
 
       end

@@ -4,7 +4,7 @@ module Lot
 
     attr_accessor :id
 
-    attr_reader :record_id
+    attr_reader :record_uuid
 
     def self.inherited thing
       thing.set_table_name_to 'records'
@@ -12,11 +12,11 @@ module Lot
 
     def initialize source = nil
       if source
-        @data      = HashWithIndifferentAccess.new(source.data_as_hstore || {})
-        @id        = source.id
-        @record_id = source.record_id
+        @data        = HashWithIndifferentAccess.new(source.data_as_hstore || {})
+        @id          = source.id
+        @record_uuid = source.record_id
       else
-        @record_id = SecureRandom.uuid
+        @record_uuid = SecureRandom.uuid
       end
       @data ||= HashWithIndifferentAccess.new({})
     end
@@ -26,7 +26,7 @@ module Lot
       record = the_data_source.where(id: self.id).first ||
                the_data_source.new.tap { |r| r.record_type = self.class.to_s }
       record.data_as_hstore = @data
-      record.record_id = self.record_id
+      record.record_id = self.record_uuid
       record.save.tap { |_| self.id = record.id }
       history << Struct.new(:record_type, :record_id).new(self.class.to_s.underscore, self.id)
     end
