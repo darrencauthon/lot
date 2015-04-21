@@ -21,6 +21,7 @@ describe Lot::Base do
       before do
         setup_db
         type.delete_all
+        Lot::RecordHistory.delete_all
       end
 
       describe "creating the data store underneath the object" do
