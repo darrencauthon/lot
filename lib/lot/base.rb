@@ -41,7 +41,9 @@ module Lot
     end
 
     def history
-      RecordHistory.all
+      RecordHistory.where(record_type: self.class.to_s.underscore,
+                          record_id:   self.id,
+                          record_uuid: self.record_uuid)
     end
 
     def method_missing meth, *args, &blk

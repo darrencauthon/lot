@@ -231,6 +231,23 @@ describe Lot::Base do
 
           end
 
+          describe "histories were created for other objects" do
+            before do
+              Lot::RecordHistory.create(record_type: record.type.to_s.underscore)
+              Lot::RecordHistory.create(record_id:   record.id)
+              Lot::RecordHistory.create(record_uuid: record.record_uuid)
+            end
+
+            it "should only return the history for the current record" do
+              record.history.count.must_equal 1
+              record.history.first.tap do |history|
+                history.record_type.must_equal type.to_s.underscore
+                history.record_id.must_equal record.id
+                history.record_uuid.must_equal record.record_uuid
+              end
+            end
+          end
+
         end
 
       end
