@@ -4,11 +4,14 @@ module Lot
 
     attr_accessor :id
 
+    attr_reader :record_id
+
     def self.inherited thing
       thing.set_table_name_to 'records'
     end
 
     def initialize source = nil
+      @record_id = SecureRandom.uuid
       if source
         @data = HashWithIndifferentAccess.new(source.data_as_hstore || {})
         @id   = source.id
