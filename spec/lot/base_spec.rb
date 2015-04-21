@@ -166,6 +166,15 @@ describe Lot::Base do
 
       end
 
+      describe "the history" do
+
+        it "should default a record to having no history" do
+          record = type.new
+          record.history.count.must_equal 0
+        end
+
+      end
+
       describe "the default schema" do
         it "should be nil, relying on the base class to reimplement it" do
           type.default_schema.nil?.must_equal true
@@ -419,4 +428,4 @@ describe Lot::Base do
 
   end
 
-end
+enddefaul

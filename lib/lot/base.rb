@@ -34,6 +34,10 @@ module Lot
       @dirties ||= []
     end
 
+    def history
+      []
+    end
+
     def method_missing meth, *args, &blk
       set_the_value(meth, args[0]) if setting_a_value? meth
       get_the_value meth
