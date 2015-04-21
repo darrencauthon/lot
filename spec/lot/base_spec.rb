@@ -145,6 +145,27 @@ describe Lot::Base do
         end
       end
 
+      describe "the record id" do
+
+        it "should set a unique record id" do
+          id = SecureRandom.uuid
+          SecureRandom.stubs(:uuid).returns id
+          record = type.new
+          record.record_id.must_equal id
+        end
+
+        it "should persist the record id" do
+          record = type.new
+          record.save
+          id        = record.id
+          record_id = record.record_id
+
+          record = type.find id
+          record.record_id.must_equal record_id
+        end
+
+      end
+
       describe "the default schema" do
         it "should be nil, relying on the base class to reimplement it" do
           type.default_schema.nil?.must_equal true
