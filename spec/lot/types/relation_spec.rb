@@ -65,6 +65,12 @@ describe "relation" do
       end
     end
 
+    describe "given nil" do
+      it "should return nil" do
+        Lot::Relation.serialize(nil).must_be_same_as nil
+      end
+    end
+
   end
 
   describe "deserializing" do
@@ -97,6 +103,12 @@ describe "relation" do
         result.is_a?(Astronaut).must_equal true
       end
 
+    end
+
+    describe "given nil" do
+      it "should return nil" do
+        Lot::Relation.deserialize(nil).must_be_same_as nil
+      end
     end
 
   end
