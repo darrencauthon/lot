@@ -6,7 +6,12 @@ Dir[File.dirname(__FILE__) + '/lot/types/*.rb'].each { |f| require f }
 module Lot
 
   def self.types
-    @types ||= {}
+    @types ||= {
+                 relation: {
+                             deserialize: ->(i) { Lot::Relation.deserialize i },
+                             serialize:   ->(i) { Lot::Relation.serialize i },
+                           }
+                }
   end
 
   def self.class_from_record_type record_type

@@ -3,8 +3,9 @@ require_relative '../../spec_helper'
 class Astronaut < Lot::Base
   def self.default_schema
     [
-      { name: :name,            type: :string },
-      { name: :favorite_planet, type: :relation, is: :planet },
+      { name: :name,                  type: :string },
+      { name: :favorite_planet,       type: :relation, record_type: :planet },
+      { name: :least_favorite_planet, type: :relation, record_type: :planet },
     ]
   end
 end
@@ -24,6 +25,7 @@ describe "relation" do
       planet = Planet.new
       result = Lot::Relation.serialize planet
       planet.record_uuid.nil?.must_equal false
+      result = HashWithIndifferentAccess.new(JSON.parse(result))
       result[:record_uuid].must_equal planet.record_uuid
     end
 
@@ -31,6 +33,7 @@ describe "relation" do
       name = random_string
       planet = Planet.new.tap { |x| x.name = name }
       result = Lot::Relation.serialize planet
+      result = HashWithIndifferentAccess.new(JSON.parse(result))
       result[:name].must_equal name
     end
 
@@ -38,6 +41,7 @@ describe "relation" do
       id = random_string
       planet = Planet.new.tap { |x| x.id = id }
       result = Lot::Relation.serialize planet
+      result = HashWithIndifferentAccess.new(JSON.parse(result))
       result[:id].must_equal id
     end
 
@@ -46,6 +50,7 @@ describe "relation" do
         it "should return the type of the class" do
           planet = Planet.new
           result = Lot::Relation.serialize planet
+          result = HashWithIndifferentAccess.new(JSON.parse(result))
           result[:record_type].must_equal 'planet'
         end
       end
@@ -54,6 +59,7 @@ describe "relation" do
         it "should return the type of the class" do
           astronaut = Astronaut.new
           result = Lot::Relation.serialize astronaut
+          result = HashWithIndifferentAccess.new(JSON.parse(result))
           result[:record_type].must_equal 'astronaut'
         end
       end
@@ -93,6 +99,24 @@ describe "relation" do
 
     end
 
+  end
+
+  describe "typing this into the system" do
+    it "should allow me to designate a favorite planet" do
+
+      earth = Planet.new.tap { |p| p.name = "Earth"; p.save_by(saver) }
+      mars  = Planet.new.tap { |p| p.name = "Mars"; p.save_by(saver) }
+
+      mary = Astronaut.new.tap { |a| a.name = "Mary"; a.save_by(saver) }
+
+      mary.favorite_planet = earth
+      mary.save_by saver
+
+      mary = Astronaut.find mary.id
+      mary.favorite_planet
+      mary.favorite_planet.class.must_equal Planet
+      mary.favorite_planet.id.must_equal earth.id
+    end
   end
 
 end
