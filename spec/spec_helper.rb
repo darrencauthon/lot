@@ -15,3 +15,7 @@ def setup_db options = {}
                   } )
   ActiveRecord::Base.establish_connection options 
 end
+
+def random_string
+  SecureRandom.uuid
+end
