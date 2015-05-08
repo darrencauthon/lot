@@ -102,20 +102,27 @@ describe "relation" do
   end
 
   describe "typing this into the system" do
+
+    let(:earth) { Planet.new.tap { |p| p.name = "Earth"; p.save_by(saver) } }
+    let(:mars)  { Planet.new.tap { |p| p.name = "Mars"; p.save_by(saver) } }
+
+    let(:mary)  { Astronaut.new.tap { |a| a.name = "Mary"; a.save_by(saver) } }
+    let(:john)  { Astronaut.new.tap { |a| a.name = "John"; a.save_by(saver) } }
+
+    before do
+      Astronaut.delete_all
+      Planet.delete_all
+      [earth, mars]
+    end
+
     it "should allow me to designate a favorite planet" do
-
-      earth = Planet.new.tap { |p| p.name = "Earth"; p.save_by(saver) }
-      mars  = Planet.new.tap { |p| p.name = "Mars"; p.save_by(saver) }
-
-      mary = Astronaut.new.tap { |a| a.name = "Mary"; a.save_by(saver) }
-
       mary.favorite_planet = earth
       mary.save_by saver
 
-      mary = Astronaut.find mary.id
-      mary.favorite_planet
-      mary.favorite_planet.class.must_equal Planet
-      mary.favorite_planet.id.must_equal earth.id
+      Astronaut.find(mary.id).favorite_planet.tap do |p|
+        p.class.must_equal Planet
+        p.id.must_equal earth.id
+      end
     end
   end
 
