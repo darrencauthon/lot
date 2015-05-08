@@ -3,10 +3,8 @@ module Lot
   module HasMany
 
     def self.serialize records
-      return nil unless records
-      records.map do |record|
-        JSON.parse Lot::HasOne.serialize(record)
-      end.to_json
+      records ? records.map { |r| JSON.parse Lot::HasOne.serialize r }.to_json
+              : nil
     end
 
     def self.deserialize input
