@@ -124,6 +124,23 @@ describe "relation" do
         p.id.must_equal earth.id
       end
     end
+
+    it "should allow me to designate multiple things" do
+      john.favorite_planet = mars
+      john.least_favorite_planet = earth
+      john.save_by saver
+
+      Astronaut.find(john.id).favorite_planet.tap do |p|
+        p.class.must_equal Planet
+        p.id.must_equal mars.id
+      end
+
+      Astronaut.find(john.id).least_favorite_planet.tap do |p|
+        p.class.must_equal Planet
+        p.id.must_equal earth.id
+      end
+    end
+
   end
 
 end
