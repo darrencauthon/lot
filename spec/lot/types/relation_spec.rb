@@ -30,6 +30,13 @@ describe "relation" do
       result[:name].must_equal name
     end
 
+    it "should return the id" do
+      id = random_string
+      planet = Planet.new.tap { |x| x.id = id }
+      result = Lot::Relation.serialize planet
+      result[:id].must_equal id
+    end
+
   end
 
 end
