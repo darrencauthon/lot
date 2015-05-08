@@ -18,9 +18,19 @@ module Lot
       Lot.class_from_record_type(input[:record_type]).find input[:id]
     end
 
+    def self.definition
+      {
+        relation: {
+                    deserialize: ->(i) { Lot::Relation.deserialize i },
+                    serialize:   ->(i) { Lot::Relation.serialize i },
+                  }
+      }
+    end
+
     class << self
 
       private
+
       def standardize_the_serialized_input input
         input = JSON.parse(input) if input.is_a?(String)
         HashWithIndifferentAccess.new input
