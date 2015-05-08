@@ -14,12 +14,17 @@ module Lot
 
     def self.deserialize input
       return nil unless input
-      input = JSON.parse(input) if input.is_a?(String)
-      input = HashWithIndifferentAccess.new input
-      record_type = input[:record_type]
-      type        = Lot.class_from_record_type(record_type)
-      id          = input[:id]
-      type.find id
+      input = standardize_the_serialized_input input
+      Lot.class_from_record_type(input[:record_type]).find input[:id]
+    end
+
+    class << self
+
+      private
+      def standardize_the_serialized_input input
+        input = JSON.parse(input) if input.is_a?(String)
+        HashWithIndifferentAccess.new input
+      end
     end
 
   end
