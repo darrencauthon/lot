@@ -21,8 +21,8 @@ module Lot
     def self.definition
       {
         relation: {
-                    deserialize: ->(i) { Lot::Relation.deserialize i },
-                    serialize:   ->(i) { Lot::Relation.serialize i },
+                    deserialize: ->(i) { self.deserialize i },
+                    serialize:   ->(i) { self.serialize i },
                   }
       }
     end
