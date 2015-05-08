@@ -4,13 +4,8 @@ module Lot
 
     def self.serialize records
       return nil unless records
-      records.map do |input|
-        {
-          record_uuid: input.record_uuid,
-          id:          input.id,
-          name:        input.name,
-          record_type: input.record_type
-        }
+      records.map do |record|
+        JSON.parse Lot::HasOne.serialize(record)
       end.to_json
     end
 
