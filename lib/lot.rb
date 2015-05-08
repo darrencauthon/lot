@@ -9,4 +9,8 @@ module Lot
     @types ||= {}
   end
 
+  def self.class_from_record_type record_type
+    record_type.to_s.camelcase.constantize
+  end
+
 end

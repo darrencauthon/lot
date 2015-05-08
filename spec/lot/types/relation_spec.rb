@@ -14,6 +14,10 @@ end
 
 describe "relation" do
 
+  let(:saver) { Struct.new(:record_type, :id, :record_uuid).new(SecureRandom.uuid, rand(100), SecureRandom.uuid) }
+
+  before { setup_db }
+
   describe "serializing" do
 
     it "should include the uuid" do
@@ -53,6 +57,44 @@ describe "relation" do
           result[:record_type].must_equal 'astronaut'
         end
       end
+    end
+
+  end
+
+  describe "deserializing" do
+
+    before do
+      Planet.delete_all
+    end
+
+    describe "looking up the original" do
+
+      it "should lookup the related item" do
+        name   = random_string
+        planet = Planet.new
+        planet.name = name
+        planet.save_by saver
+
+        input = { record_type: :planet, id: planet.id }
+        result = Lot::Relation.deserialize input
+        result.id.must_equal planet.id
+        result.name.must_equal planet.name
+        result.is_a?(Planet).must_equal true
+      end
+
+      it "should lookup the related item, for another type" do
+        name   = random_string
+        astronaut = Astronaut.new
+        astronaut.name = name
+        astronaut.save_by saver
+
+        input = { record_type: :astronaut, id: astronaut.id }
+        result = Lot::Relation.deserialize input
+        result.id.must_equal astronaut.id
+        result.name.must_equal astronaut.name
+        result.is_a?(Astronaut).must_equal true
+      end
+
     end
 
   end

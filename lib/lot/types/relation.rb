@@ -8,5 +8,9 @@ module Lot
         record_type: input.record_type
       }
     end
+
+    def self.deserialize input
+      Lot.class_from_record_type(input[:record_type]).find input[:id]
+    end
   end
 end
