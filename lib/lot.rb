@@ -7,6 +7,7 @@ module Lot
 
   def self.types
     @types ||= {}.merge!(Lot::HasOne.definition)
+                 .merge!(Lot::HasMany.definition)
   end
 
   def self.class_from_record_type record_type
