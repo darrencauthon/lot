@@ -37,6 +37,24 @@ describe "relation" do
       result[:id].must_equal id
     end
 
+    describe "returning the type of the class" do
+      describe "one example" do
+        it "should return the type of the class" do
+          planet = Planet.new
+          result = Lot::Relation.serialize planet
+          result[:record_type].must_equal 'planet'
+        end
+      end
+
+      describe "another example" do
+        it "should return the type of the class" do
+          astronaut = Astronaut.new
+          result = Lot::Relation.serialize astronaut
+          result[:record_type].must_equal 'astronaut'
+        end
+      end
+    end
+
   end
 
 end
