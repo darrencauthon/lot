@@ -63,10 +63,6 @@ describe "relation" do
 
   describe "deserializing" do
 
-    before do
-      Planet.delete_all
-    end
-
     describe "looking up the original" do
 
       it "should lookup the related item" do
