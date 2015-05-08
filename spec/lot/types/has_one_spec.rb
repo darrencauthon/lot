@@ -4,8 +4,8 @@ class Astronaut < Lot::Base
   def self.default_schema
     [
       { name: :name,                  type: :string },
-      { name: :favorite_planet,       type: :relation, record_type: :planet },
-      { name: :least_favorite_planet, type: :relation, record_type: :planet },
+      { name: :favorite_planet,       type: :has_one },
+      { name: :least_favorite_planet, type: :has_one },
     ]
   end
 end
@@ -13,7 +13,7 @@ end
 class Planet < Lot::Base
 end
 
-describe "relation" do
+describe "has one" do
 
   let(:saver) { Struct.new(:record_type, :id, :record_uuid).new(SecureRandom.uuid, rand(100), SecureRandom.uuid) }
 
@@ -23,7 +23,7 @@ describe "relation" do
 
     it "should include the uuid" do
       planet = Planet.new
-      result = Lot::Relation.serialize planet
+      result = Lot::HasOne.serialize planet
       planet.record_uuid.nil?.must_equal false
       result = HashWithIndifferentAccess.new(JSON.parse(result))
       result[:record_uuid].must_equal planet.record_uuid
@@ -32,7 +32,7 @@ describe "relation" do
     it "should return the name" do
       name = random_string
       planet = Planet.new.tap { |x| x.name = name }
-      result = Lot::Relation.serialize planet
+      result = Lot::HasOne.serialize planet
       result = HashWithIndifferentAccess.new(JSON.parse(result))
       result[:name].must_equal name
     end
@@ -40,7 +40,7 @@ describe "relation" do
     it "should return the id" do
       id = random_string
       planet = Planet.new.tap { |x| x.id = id }
-      result = Lot::Relation.serialize planet
+      result = Lot::HasOne.serialize planet
       result = HashWithIndifferentAccess.new(JSON.parse(result))
       result[:id].must_equal id
     end
@@ -49,7 +49,7 @@ describe "relation" do
       describe "one example" do
         it "should return the type of the class" do
           planet = Planet.new
-          result = Lot::Relation.serialize planet
+          result = Lot::HasOne.serialize planet
           result = HashWithIndifferentAccess.new(JSON.parse(result))
           result[:record_type].must_equal 'planet'
         end
@@ -58,7 +58,7 @@ describe "relation" do
       describe "another example" do
         it "should return the type of the class" do
           astronaut = Astronaut.new
-          result = Lot::Relation.serialize astronaut
+          result = Lot::HasOne.serialize astronaut
           result = HashWithIndifferentAccess.new(JSON.parse(result))
           result[:record_type].must_equal 'astronaut'
         end
@@ -67,7 +67,7 @@ describe "relation" do
 
     describe "given nil" do
       it "should return nil" do
-        Lot::Relation.serialize(nil).must_be_same_as nil
+        Lot::HasOne.serialize(nil).must_be_same_as nil
       end
     end
 
@@ -84,7 +84,7 @@ describe "relation" do
         planet.save_by saver
 
         input = { record_type: :planet, id: planet.id }
-        result = Lot::Relation.deserialize input
+        result = Lot::HasOne.deserialize input
         result.id.must_equal planet.id
         result.name.must_equal planet.name
         result.is_a?(Planet).must_equal true
@@ -97,7 +97,7 @@ describe "relation" do
         astronaut.save_by saver
 
         input = { record_type: :astronaut, id: astronaut.id }
-        result = Lot::Relation.deserialize input
+        result = Lot::HasOne.deserialize input
         result.id.must_equal astronaut.id
         result.name.must_equal astronaut.name
         result.is_a?(Astronaut).must_equal true
@@ -107,7 +107,7 @@ describe "relation" do
 
     describe "given nil" do
       it "should return nil" do
-        Lot::Relation.deserialize(nil).must_be_same_as nil
+        Lot::HasOne.deserialize(nil).must_be_same_as nil
       end
     end
 

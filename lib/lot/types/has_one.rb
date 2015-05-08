@@ -1,6 +1,6 @@
 module Lot
 
-  module Relation
+  module HasOne
 
     def self.serialize input
       return nil unless input
@@ -20,10 +20,10 @@ module Lot
 
     def self.definition
       {
-        relation: {
-                    deserialize: ->(i) { self.deserialize i },
-                    serialize:   ->(i) { self.serialize i },
-                  }
+        has_one: {
+                   deserialize: ->(i) { self.deserialize i },
+                   serialize:   ->(i) { self.serialize i },
+                 }
       }
     end
 
