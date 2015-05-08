@@ -1,5 +1,7 @@
 module Lot
+
   module Relation
+
     def self.serialize input
       return nil unless input
       {
@@ -19,5 +21,7 @@ module Lot
       id          = input[:id]
       type.find id
     end
+
   end
+
 end
