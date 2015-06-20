@@ -107,6 +107,31 @@ describe Lot::Base do
           record.state.must_equal state
         end
 
+        describe "deleting records" do
+          it "should let me delete records" do
+            record = type.new
+            record.save_by(saver)
+
+            record = type.find record.id
+            record.delete_by saver
+            type.all.count.must_equal 0
+          end
+
+          it "should keep any non-deleted records" do
+            record = type.new
+            record.save_by(saver)
+
+            others = [1, 2].map { |_| type.new.tap { |x| x.save_by saver } }
+
+            record = type.find record.id
+            record.delete_by saver
+            type.all.count.must_equal 2
+
+            type.find(others[0].id).nil?.must_equal false
+            type.find(others[1].id).nil?.must_equal false
+          end
+        end
+
       end
 
       describe "trying to save without a saver" do

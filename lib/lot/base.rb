@@ -25,6 +25,10 @@ module Lot
       self.class.to_s.underscore.gsub(' ', '_')
     end
 
+    def delete_by saver
+      the_data_source.where(id: self.id).first.delete
+    end
+
     def save_by saver
       return false unless saver
       @dirties = nil
