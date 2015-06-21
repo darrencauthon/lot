@@ -149,6 +149,13 @@ describe Lot::Base do
             record.delete_by saver
             Lot::DeletedRecord.first.record_id.must_equal record.id.to_s
           end
+
+          it "should retain the record uuid, as a string" do
+            record = type.new.tap { |x| x.save_by saver }
+            record = type.find record.id
+            record.delete_by saver
+            Lot::DeletedRecord.first.record_uuid.must_equal record.record_uuid.to_s
+          end
         end
 
       end

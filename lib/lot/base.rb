@@ -26,7 +26,7 @@ module Lot
     end
 
     def delete_by saver
-      DeletedRecord.create(record_type: self.record_type, record_id: id)
+      DeletedRecord.create(record_type: self.record_type, record_id: id, record_uuid: record_uuid)
       the_data_source.where(id: self.id).first.delete
     end
 
