@@ -23,6 +23,7 @@ describe Lot::Base do
       before do
         setup_db
         type.delete_all
+        Lot::DeletedRecord.delete_all
         Lot::RecordHistory.delete_all
       end
 
@@ -129,6 +130,24 @@ describe Lot::Base do
 
             type.find(others[0].id).nil?.must_equal false
             type.find(others[1].id).nil?.must_equal false
+          end
+
+          it "should keep a history of the deleted record" do
+            record = type.new.tap { |x| x.save_by saver }
+            record.delete_by saver
+            Lot::DeletedRecord.count.must_equal 1
+          end
+
+          it "should retain the record type" do
+            record = type.new.tap { |x| x.save_by saver }
+            record.delete_by saver
+            Lot::DeletedRecord.first.record_type.must_equal record.record_type
+          end
+
+          it "should retain the record id, as a string" do
+            record = type.new.tap { |x| x.save_by saver }
+            record.delete_by saver
+            Lot::DeletedRecord.first.record_id.must_equal record.id.to_s
           end
         end
 
