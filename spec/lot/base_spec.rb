@@ -659,4 +659,15 @@ describe Lot::Base do
 
   end
 
+  describe "types" do
+
+    before { Lot::Base.instance_eval { @types = nil } }
+
+    it "should default to an empty list" do
+      Lot::Base.types.count.must_equal 0
+      Lot::Base.types.is_a?(Array).must_equal true
+    end
+
+  end
+
 end

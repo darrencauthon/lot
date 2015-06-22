@@ -77,7 +77,10 @@ module Lot
     class << self
 
       attr_accessor :schema
-      attr_reader :types
+
+      def types
+        @types || []
+      end
 
       attr_reader :table_name
       def set_table_name_to table
