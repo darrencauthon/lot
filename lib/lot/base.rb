@@ -8,7 +8,8 @@ module Lot
 
     def self.inherited thing
       thing.set_table_name_to 'records'
-      @types = [thing]
+      @types ||= []
+      @types << thing
     end
 
     def initialize source = nil

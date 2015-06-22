@@ -646,6 +646,17 @@ describe Lot::Base do
       Lot::Base.types.first.must_be_same_as type
     end
 
+    it "should continue to build on that list as new types come in" do
+      another_type = Object.new
+      another_type.stubs :set_table_name_to
+      Lot::Base.inherited type
+      Lot::Base.inherited another_type
+
+      Lot::Base.types.count.must_equal 2
+      Lot::Base.types.include?(another_type).must_equal true
+      Lot::Base.types.include?(type).must_equal true
+    end
+
   end
 
 end
