@@ -8,6 +8,7 @@ module Lot
 
     def self.inherited thing
       thing.set_table_name_to 'records'
+      @types = [thing]
     end
 
     def initialize source = nil
@@ -75,6 +76,7 @@ module Lot
     class << self
 
       attr_accessor :schema
+      attr_reader :types
 
       attr_reader :table_name
       def set_table_name_to table

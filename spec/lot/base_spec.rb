@@ -626,4 +626,26 @@ describe Lot::Base do
 
   end
 
+  describe "inherited" do
+
+    let(:type) { Object.new }
+
+    before do
+      Lot::Base.instance_eval { @types = nil }
+      type.stubs(:set_table_name_to).with 'records'
+    end
+
+    it "should set the default table name to records" do
+      type.expects(:set_table_name_to).with 'records'
+      Lot::Base.inherited type
+    end
+
+    it "should start on a list of types" do
+      Lot::Base.inherited type
+      Lot::Base.types.count.must_equal 1
+      Lot::Base.types.first.must_be_same_as type
+    end
+
+  end
+
 end
