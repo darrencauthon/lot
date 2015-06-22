@@ -23,6 +23,7 @@ describe Lot::Base do
       before do
         setup_db
         type.delete_all
+        Lot::DeletedRecord.delete_all
         Lot::RecordHistory.delete_all
       end
 
@@ -105,6 +106,63 @@ describe Lot::Base do
           record = type.find record.id
           record.city.must_equal city
           record.state.must_equal state
+        end
+
+        describe "deleting records" do
+          it "should let me delete records" do
+            record = type.new
+            record.save_by(saver)
+
+            record = type.find record.id
+            record.delete_by saver
+            type.all.count.must_equal 0
+          end
+
+          it "should keep any non-deleted records" do
+            record = type.new
+            record.save_by(saver)
+
+            others = [1, 2].map { |_| type.new.tap { |x| x.save_by saver } }
+
+            record = type.find record.id
+            record.delete_by saver
+            type.all.count.must_equal 2
+
+            type.find(others[0].id).nil?.must_equal false
+            type.find(others[1].id).nil?.must_equal false
+          end
+
+          it "should keep a history of the deleted record" do
+            record = type.new.tap { |x| x.save_by saver }
+            record.delete_by saver
+            Lot::DeletedRecord.count.must_equal 1
+          end
+
+          it "should retain the record type" do
+            record = type.new.tap { |x| x.save_by saver }
+            record.delete_by saver
+            Lot::DeletedRecord.first.record_type.must_equal record.record_type
+          end
+
+          it "should retain the record id, as a string" do
+            record = type.new.tap { |x| x.save_by saver }
+            record.delete_by saver
+            Lot::DeletedRecord.first.record_id.must_equal record.id.to_s
+          end
+
+          it "should retain the record uuid, as a string" do
+            record = type.new.tap { |x| x.save_by saver }
+            record.delete_by saver
+            Lot::DeletedRecord.first.record_uuid.must_equal record.record_uuid.to_s
+          end
+
+          it "should retain record data" do
+            name = SecureRandom.uuid
+            record = type.new.tap { |x| x.save_by saver }
+            record.name = name
+            record.delete_by saver
+            JSON.parse(Lot::DeletedRecord.first.data)['name'].must_equal record.name
+          end
         end
 
       end
@@ -211,11 +269,11 @@ describe Lot::Base do
         describe "the historical record" do
 
           let(:key)   { SecureRandom.uuid }
-          let(:value) { SecureRandom.uuid }
+          let(:the_value) { SecureRandom.uuid }
 
           let(:record) do
             type.new.tap do |r|
-              r.send("#{key}=".to_sym, value)
+              r.send("#{key}=".to_sym, the_value)
               r.save_by(saver)
             end
           end
@@ -237,7 +295,7 @@ describe Lot::Base do
           end
 
           it "should include the new data" do
-            record.history[0].new_data[key].must_equal value
+            record.history[0].new_data[key].must_equal the_value
           end
 
           describe "stamping more history" do
@@ -249,7 +307,7 @@ describe Lot::Base do
             end
 
             it "should include the old data" do
-              record.history[1].old_data[key].must_equal value
+              record.history[1].old_data[key].must_equal the_value
             end
 
             it "should include the new data" do

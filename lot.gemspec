@@ -24,4 +24,5 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'activerecord', '>= 4.0'
   spec.add_runtime_dependency 'pg'
+  spec.add_runtime_dependency 'json'
 end

@@ -25,6 +25,14 @@ module Lot
       self.class.to_s.underscore.gsub(' ', '_')
     end
 
+    def delete_by saver
+      DeletedRecord.create(record_type: record_type,
+                           record_id:   id,
+                           record_uuid: record_uuid,
+                           data:        JSON.dump(@data))
+      the_data_source.where(id: self.id).first.delete
+    end
+
     def save_by saver
       return false unless saver
       @dirties = nil
