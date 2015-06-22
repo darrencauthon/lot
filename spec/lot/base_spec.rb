@@ -152,9 +152,16 @@ describe Lot::Base do
 
           it "should retain the record uuid, as a string" do
             record = type.new.tap { |x| x.save_by saver }
-            record = type.find record.id
             record.delete_by saver
             Lot::DeletedRecord.first.record_uuid.must_equal record.record_uuid.to_s
+          end
+
+          it "should retain record data" do
+            name = SecureRandom.uuid
+            record = type.new.tap { |x| x.save_by saver }
+            record.name = name
+            record.delete_by saver
+            JSON.parse(Lot::DeletedRecord.first.data)['name'].must_equal record.name
           end
         end
 
@@ -262,11 +269,11 @@ describe Lot::Base do
         describe "the historical record" do
 
           let(:key)   { SecureRandom.uuid }
-          let(:value) { SecureRandom.uuid }
+          let(:the_value) { SecureRandom.uuid }
 
           let(:record) do
             type.new.tap do |r|
-              r.send("#{key}=".to_sym, value)
+              r.send("#{key}=".to_sym, the_value)
               r.save_by(saver)
             end
           end
@@ -288,7 +295,7 @@ describe Lot::Base do
           end
 
           it "should include the new data" do
-            record.history[0].new_data[key].must_equal value
+            record.history[0].new_data[key].must_equal the_value
           end
 
           describe "stamping more history" do
@@ -300,7 +307,7 @@ describe Lot::Base do
             end
 
             it "should include the old data" do
-              record.history[1].old_data[key].must_equal value
+              record.history[1].old_data[key].must_equal the_value
             end
 
             it "should include the new data" do
