@@ -33,6 +33,16 @@ module Lot
       the_data_source.where(id: self.id).first.delete
     end
 
+    def create!
+      @dirties = nil
+      record = find_or_new_up_record
+      stamp_the_history_for(record, nil) do
+        record.data_as_hstore = @data
+        record.record_id      = self.record_uuid
+        record.save.tap { |_| self.id = record.id }
+      end
+    end
+
     def save_by saver
       return false unless saver
       @dirties = nil
@@ -116,7 +126,7 @@ module Lot
 
     private
 
-    def stamp_the_history_for record, saver
+    def stamp_the_history_for record, saver = nil
       old_data = record.data_as_hstore || {}
       yield.tap do
         RecordHistory.create(record_type: self.record_type,
@@ -124,9 +134,9 @@ module Lot
                              record_uuid: self.record_uuid,
                              old_data:    old_data,
                              new_data:    @data,
-                             saver_id:    saver.id,
-                             saver_uuid:  saver.record_uuid,
-                             saver_type:  saver.record_type)
+                             saver_id:    saver ? saver.id          : nil,
+                             saver_uuid:  saver ? saver.record_uuid : nil,
+                             saver_type:  saver ? saver.record_type : nil)
       end
     end
 

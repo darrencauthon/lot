@@ -108,6 +108,18 @@ describe Lot::Base do
           record.state.must_equal state
         end
 
+        describe "creating without a saver" do
+          it "should let me create a record without a creator" do
+            name = SecureRandom.uuid
+            record = type.new
+            record.name = name
+            record.create!
+
+            record = type.find record.id
+            record.name.must_equal name
+          end
+        end
+
         describe "deleting records" do
           it "should let me delete records" do
             record = type.new
