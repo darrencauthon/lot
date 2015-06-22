@@ -34,17 +34,16 @@ module Lot
     end
 
     def create!
-      @dirties = nil
-      record = find_or_new_up_record
-      stamp_the_history_for(record, nil) do
-        record.data_as_hstore = @data
-        record.record_id      = self.record_uuid
-        record.save.tap { |_| self.id = record.id }
-      end
+      save!
     end
 
     def save_by saver
       return false unless saver
+      save!( { saver: saver } )
+    end
+
+    def save! options = {}
+      saver = options[:saver]
       @dirties = nil
       record = find_or_new_up_record
       stamp_the_history_for(record, saver) do
