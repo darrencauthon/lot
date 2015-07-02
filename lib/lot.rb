@@ -10,6 +10,7 @@ module Lot
     @types ||= {}.merge!(Lot::HasOne.definition)
                  .merge!(Lot::HasMany.definition)
                  .merge!(Lot::Array.definition)
+                 .merge!(Lot::Object.definition)
   end
 
   def self.class_from_record_type record_type
