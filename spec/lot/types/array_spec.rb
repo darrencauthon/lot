@@ -24,4 +24,26 @@ describe "array" do
     lover.things.is_a?(Array).must_equal true
   end
 
+  it "should allow me to save arrays of strings" do
+    lover = ArrayLover.new
+    lover.things = ['a', 'b']
+    lover.save_by saver
+
+    lover = ArrayLover.find lover.id
+    lover.things.count.must_equal 2
+    lover.things.include?('a').must_equal true
+    lover.things.include?('b').must_equal true
+  end
+
+  it "should allow me to save arrays of numbers" do
+    lover = ArrayLover.new
+    lover.things = [1, 2]
+    lover.save_by saver
+
+    lover = ArrayLover.find lover.id
+    lover.things.count.must_equal 2
+    lover.things.include?(1).must_equal true
+    lover.things.include?(2).must_equal true
+  end
+
 end
