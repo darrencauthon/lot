@@ -7,7 +7,8 @@ module Lot
     end
 
     def self.deserialize input
-      input ? JSON.parse(input) : []
+      (input ? JSON.parse(input) : [])
+        .map { |x| x.is_a?(Hash) ? HashWithIndifferentAccess.new(x) : x }
     end
 
     def self.definition

@@ -46,4 +46,27 @@ describe "array" do
     lover.things.include?(2).must_equal true
   end
 
+  it "should allow me to save hashes" do
+    lover = ArrayLover.new
+    lover.things = [ { name: 'a' }, { name: 'b' } ]
+    lover.save_by saver
+
+    lover = ArrayLover.find lover.id
+    lover.things.count.must_equal 2
+    lover.things.select { |x| x['name'] == 'a' }.count.must_equal 1
+    lover.things.select { |x| x['name'] == 'b' }.count.must_equal 1
+  end
+
+  it "should allow me to save hashes, and return them as hash with indifferent access" do
+    lover = ArrayLover.new
+    lover.things = [ { name: 'a' }, { name: 'b' } ]
+    lover.save_by saver
+
+    lover = ArrayLover.find lover.id
+    lover.things.count.must_equal 2
+    lover.things.select { |x| x['name'] == 'a' }.count.must_equal 1
+    lover.things.select { |x| x['name'] == 'b' }.count.must_equal 1
+    lover.things.select { |x| x[:name] == 'a' }.count.must_equal 1
+    lover.things.select { |x| x[:name] == 'b' }.count.must_equal 1
+  end
 end
