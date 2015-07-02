@@ -32,4 +32,16 @@ describe "object" do
     end
   end
 
+  it "should allow me to save more complicated objects" do
+    arnie = ObjectLover.new
+    arnie.save_by saver
+
+    lover = ObjectLover.new
+    lover.thing = arnie
+    lover.save_by saver
+
+    ObjectLover.find(lover.id).thing.is_a?(ObjectLover).must_equal true
+    ObjectLover.find(lover.id).thing.id.must_equal arnie.id
+  end
+
 end
