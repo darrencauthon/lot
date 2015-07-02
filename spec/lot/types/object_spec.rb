@@ -23,4 +23,13 @@ describe "object" do
     lover.thing.nil?.must_equal true
   end
 
+  it "should allow me to save simple values" do
+    ['1', nil, 2].each do |value|
+      lover = ObjectLover.new
+      lover.thing = value
+      lover.save_by saver
+      ObjectLover.find(lover.id).thing.must_equal value
+    end
+  end
+
 end
