@@ -177,6 +177,20 @@ describe Lot::Base do
           end
         end
 
+        describe "eventing" do
+
+          describe "creating a record" do
+
+            it "should fire a record created event" do
+              record = type.new
+              Lot::Event.expects(:publish).with("#{type.to_s.downcase}_created".to_sym, {})
+              record.save_by(saver)
+            end
+
+          end
+
+        end
+
       end
 
       describe "trying to save without a saver" do

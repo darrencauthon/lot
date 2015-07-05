@@ -51,7 +51,10 @@ module Lot
       stamp_the_history_for(record, saver) do
         record.data_as_hstore = @data
         record.record_id      = self.record_uuid
-        record.save.tap { |_| self.id = record.id }
+        record.save.tap do |_|
+          self.id = record.id
+          Lot::Event.publish("#{self.record_type}_created".to_sym, {})
+        end
       end
     end
 
