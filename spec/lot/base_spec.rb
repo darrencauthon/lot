@@ -182,8 +182,13 @@ describe Lot::Base do
           describe "creating a record" do
 
             it "should fire a record created event" do
+              name = random_string
+
               record = type.new
-              Lot::Event.expects(:publish).with("#{type.to_s.downcase}_created".to_sym, {})
+              record.name = name
+
+              Lot::Event.expects(:publish).with("#{type.to_s.downcase}_created", { 'name' => name } )
+
               record.save_by(saver)
             end
 

@@ -53,7 +53,7 @@ module Lot
         record.record_id      = self.record_uuid
         record.save.tap do |_|
           self.id = record.id
-          Lot::Event.publish("#{self.record_type}_created".to_sym, {})
+          Lot::Event.publish("#{self.record_type}_created", @data)
         end
       end
     end
