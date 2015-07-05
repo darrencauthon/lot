@@ -8,5 +8,9 @@ module Lot
     def self.types
       @types || []
     end
+
+    def self.subscribed? event, data
+      false
+    end
   end
 end

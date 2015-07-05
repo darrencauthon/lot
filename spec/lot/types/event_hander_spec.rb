@@ -20,4 +20,12 @@ describe Lot::EventHandler do
 
   end
 
+  describe "subscribed?" do
+
+    it "should return false by default" do
+      Lot::EventHandler.subscribed?(nil, nil).must_equal false
+    end
+
+  end
+
 end
