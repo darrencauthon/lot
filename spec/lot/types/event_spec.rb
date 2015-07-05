@@ -22,8 +22,8 @@ describe Lot::Event do
       describe "and both subscribed to the event" do
 
         before do
-          subscriber1.stubs(:subscribed?).returns true
-          subscriber2.stubs(:subscribed?).returns true
+          subscriber1.stubs(:subscribed?).with(event, data).returns true
+          subscriber2.stubs(:subscribed?).with(event, data).returns true
         end
 
         it "should fire each of the subscribers" do
@@ -38,8 +38,8 @@ describe Lot::Event do
       describe "and only one is subscribed to the event" do
 
         before do
-          subscriber1.stubs(:subscribed?).returns true
-          subscriber2.stubs(:subscribed?).returns false
+          subscriber1.stubs(:subscribed?).with(event, data).returns true
+          subscriber2.stubs(:subscribed?).with(event, data).returns false
         end
 
         it "should fire each of the subscribers" do
