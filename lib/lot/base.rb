@@ -48,12 +48,14 @@ module Lot
       saver = options[:saver]
       @dirties = nil
       record = find_or_new_up_record
+      persisted = record.persisted?
       stamp_the_history_for(record, saver) do
         record.data_as_hstore = @data
         record.record_id      = self.record_uuid
+
         record.save.tap do |_|
           self.id = record.id
-          Lot::Event.publish("#{self.record_type}_created", @data)
+          Lot::Event.publish("#{self.record_type}_#{persisted ? 'updated' : 'created'}", @data)
         end
       end
     end

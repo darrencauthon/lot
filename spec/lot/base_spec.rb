@@ -194,6 +194,21 @@ describe Lot::Base do
 
           end
 
+          describe "updating a record" do
+
+            it "should fire a record updated event" do
+              record = type.new
+              record.name = random_string
+              record.save_by saver
+
+              name = random_string
+              Lot::Event.expects(:publish).with("#{type.to_s.downcase}_updated", { 'name' => name } )
+              record.name = name
+              record.save_by(saver)
+            end
+
+          end
+
         end
 
       end
