@@ -12,5 +12,9 @@ module Lot
     def self.subscribed? event, data
       false
     end
+
+    def self.fire event, data
+      new.execute event, data
+    end
   end
 end

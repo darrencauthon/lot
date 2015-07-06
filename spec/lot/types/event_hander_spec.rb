@@ -28,4 +28,24 @@ describe Lot::EventHandler do
 
   end
 
+  describe "fire" do
+
+    let(:the_event) { Object.new }
+    let(:the_data)  { Object.new }
+
+    before { eval "class Something < Lot::EventHandler; end" }
+
+    after do
+      Lot::EventHandler.instance_eval { @types = nil }
+    end
+
+    it "should new up the class, then call execute on it" do
+      something = Object.new
+      Something.stubs(:new).returns something
+
+      something.expects(:execute).with the_event, the_data
+      Something.fire the_event, the_data
+    end
+  end
+
 end
