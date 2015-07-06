@@ -1,5 +1,8 @@
 module Lot
   class EventHandler
+
+    attr_accessor :event, :data
+
     def self.inherited type
       @types ||= []
       @types << type
@@ -14,7 +17,10 @@ module Lot
     end
 
     def self.fire event, data
-      new.execute event, data
+      self.new.tap do |e|
+        e.event = event
+        e.data  = data
+      end.execute
     end
   end
 end

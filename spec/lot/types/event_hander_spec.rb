@@ -39,11 +39,14 @@ describe Lot::EventHandler do
       Lot::EventHandler.instance_eval { @types = nil }
     end
 
-    it "should new up the class, then call execute on it" do
-      something = Object.new
+    it "should call execute with the event and data set" do
+      something = Something.new
       Something.stubs(:new).returns something
 
-      something.expects(:execute).with the_event, the_data
+      something.expects(:execute).with do
+        something.event.must_be_same_as the_event
+        something.data.must_be_same_as the_data
+      end
       Something.fire the_event, the_data
     end
   end
