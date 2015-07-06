@@ -187,7 +187,13 @@ describe Lot::Base do
               record = type.new
               record.name = name
 
-              Lot::Event.expects(:publish).with("#{type.to_s}: Created", { 'name' => name }, instigator)
+              t = type
+              Lot::Event.expects(:publish).with do |e, d, i|
+                e.must_equal "#{type.to_s}: Created"
+                d['id'].must_equal t.all.first.id
+                d['name'].must_equal name
+                i.must_be_same_as instigator
+              end
 
               record.save_by(instigator)
             end
@@ -202,7 +208,7 @@ describe Lot::Base do
               record.save_by instigator
 
               name = random_string
-              Lot::Event.expects(:publish).with("#{type.to_s}: Updated", { 'name' => name }, instigator)
+              Lot::Event.expects(:publish).with("#{type.to_s}: Updated", { 'id' => record.id, 'name' => name }, instigator)
               record.name = name
               record.save_by(instigator)
             end

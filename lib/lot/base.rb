@@ -55,7 +55,8 @@ module Lot
 
         record.save.tap do |_|
           self.id = record.id
-          Lot::Event.publish("#{self.class.to_s}: #{persisted ? 'Updated' : 'Created'}", @data, instigator)
+          the_data = @data.dup.merge('id' => record.id)
+          Lot::Event.publish("#{self.class.to_s}: #{persisted ? 'Updated' : 'Created'}", the_data, instigator)
         end
       end
     end
