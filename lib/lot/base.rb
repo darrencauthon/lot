@@ -55,7 +55,7 @@ module Lot
 
         record.save.tap do |_|
           self.id = record.id
-          Lot::Event.publish("#{self.class.to_s} #{persisted ? 'updated' : 'created'}", @data)
+          Lot::Event.publish("#{self.class.to_s} #{persisted ? 'updated' : 'created'}", @data, saver)
         end
       end
     end

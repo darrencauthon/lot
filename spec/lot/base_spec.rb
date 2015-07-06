@@ -187,7 +187,7 @@ describe Lot::Base do
               record = type.new
               record.name = name
 
-              Lot::Event.expects(:publish).with("#{type.to_s} created", { 'name' => name } )
+              Lot::Event.expects(:publish).with("#{type.to_s} created", { 'name' => name }, saver)
 
               record.save_by(saver)
             end
@@ -202,7 +202,7 @@ describe Lot::Base do
               record.save_by saver
 
               name = random_string
-              Lot::Event.expects(:publish).with("#{type.to_s} updated", { 'name' => name } )
+              Lot::Event.expects(:publish).with("#{type.to_s} updated", { 'name' => name }, saver)
               record.name = name
               record.save_by(saver)
             end

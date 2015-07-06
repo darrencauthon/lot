@@ -23,7 +23,7 @@ describe Lot::EventHandler do
   describe "subscribed?" do
 
     it "should return false by default" do
-      Lot::EventHandler.subscribed?(nil, nil).must_equal false
+      Lot::EventHandler.subscribed?(nil, nil, nil).must_equal false
     end
 
   end
@@ -32,6 +32,7 @@ describe Lot::EventHandler do
 
     let(:the_event) { Object.new }
     let(:the_data)  { Object.new }
+    let(:saver)     { Object.new }
 
     before { eval "class Something < Lot::EventHandler; end" }
 
@@ -46,8 +47,9 @@ describe Lot::EventHandler do
       something.expects(:execute).with do
         something.event.must_be_same_as the_event
         something.data.must_be_same_as the_data
+        something.saver.must_be_same_as saver
       end
-      Something.fire the_event, the_data
+      Something.fire the_event, the_data, saver
     end
   end
 
