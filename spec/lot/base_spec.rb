@@ -209,6 +209,16 @@ describe Lot::Base do
 
           end
 
+          describe "firing an event with a !" do
+            it "should if fire an event" do
+              record = type.new
+              record.save_by instigator
+
+              Lot::Event.expects(:publish).with("#{type.to_s}: Do something", { 'id' => record.id }, nil)
+              record.do_something!
+            end
+          end
+
         end
 
       end

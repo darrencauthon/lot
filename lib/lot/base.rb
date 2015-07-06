@@ -72,6 +72,11 @@ module Lot
 
     def method_missing meth, *args, &blk
       set_the_value(meth, args[0]) if setting_a_value? meth
+      if meth.to_s.end_with?('!')
+        event = self.class.to_s + ': ' + meth.to_s.gsub('!', '').gsub('_', ' ').capitalize
+        data = { 'id' => self.id }
+        Lot::Event.publish event, data, nil
+      end
       get_the_value meth
     end
 
