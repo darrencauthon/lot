@@ -8,6 +8,10 @@ module Lot
       event.split(':')[0].constantize.find data['record_id']
     end
 
+    def task
+      event.split(':')[1].strip
+    end
+
     def self.inherited type
       @types ||= []
       @types << type

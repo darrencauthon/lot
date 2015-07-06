@@ -84,4 +84,27 @@ describe Lot::EventHandler do
 
   end
 
+  describe "task" do
+
+    before do
+      OhAndAnotherThing.new.save!
+      OhAndAnotherThing.new.save!
+      OhAndAnotherThing.new.save!
+    end
+
+    it "should look up the task" do
+      task = random_string
+
+      subject = OhAndAnotherThing.new
+      subject.save!
+
+      handler = Lot::EventHandler.new
+      handler.data  = { 'record_id' => subject.id }
+      handler.event = "OhAndAnotherThing: #{task}"
+
+      handler.task.must_equal task
+    end
+
+  end
+
 end
