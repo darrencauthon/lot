@@ -1,8 +1,14 @@
 require_relative '../../spec_helper'
 
+class OhAndAnotherThing < Lot::Base
+end
+
 describe Lot::EventHandler do
 
-  before { Lot::EventHandler.instance_eval { @types = nil } }
+  before do
+    setup_db
+    Lot::EventHandler.instance_eval { @types = nil }
+  end
 
   describe "types" do
 
@@ -51,6 +57,31 @@ describe Lot::EventHandler do
       end
       Something.fire the_event, the_data, instigator
     end
+  end
+
+  describe "subject" do
+
+    before do
+      OhAndAnotherThing.new.save!
+      OhAndAnotherThing.new.save!
+      OhAndAnotherThing.new.save!
+    end
+
+    describe "a subject can be found matching the record_id and event name in the system" do
+
+      it "should look up the subject" do
+        subject = OhAndAnotherThing.new
+        subject.save!
+
+        handler = Lot::EventHandler.new
+        handler.data  = { 'record_id' => subject.id }
+        handler.event = 'OhAndAnotherThing: Jump up and down'
+
+        handler.subject.id.must_equal subject.id
+      end
+
+    end
+
   end
 
 end

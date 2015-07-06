@@ -4,6 +4,10 @@ module Lot
 
     attr_accessor :event, :data, :instigator
 
+    def subject
+      event.split(':')[0].constantize.find data['record_id']
+    end
+
     def self.inherited type
       @types ||= []
       @types << type
