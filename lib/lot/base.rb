@@ -75,7 +75,7 @@ module Lot
       if meth.to_s.end_with?('!')
         event = self.class.to_s + ': ' + meth.to_s.gsub('!', '').gsub('_', ' ').capitalize
         data = { 'id' => self.id }
-        Lot::Event.publish event, data, nil
+        Lot::Event.publish event, data, args[0]
       end
       get_the_value meth
     end

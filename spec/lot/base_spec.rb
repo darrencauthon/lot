@@ -217,6 +217,14 @@ describe Lot::Base do
               Lot::Event.expects(:publish).with("#{type.to_s}: Do something", { 'id' => record.id }, nil)
               record.do_something!
             end
+
+            it "should should track the instigator passed as the first argument" do
+              record = type.new
+              record.save_by instigator
+
+              Lot::Event.expects(:publish).with("#{type.to_s}: Do something", { 'id' => record.id }, instigator)
+              record.do_something! instigator
+            end
           end
 
         end
