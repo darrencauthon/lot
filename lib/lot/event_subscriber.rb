@@ -1,6 +1,6 @@
 module Lot
 
-  class EventHandler
+  class EventSubscriber
 
     attr_accessor :event, :data, :instigator
 

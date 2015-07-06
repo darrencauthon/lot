@@ -17,7 +17,7 @@ describe Lot::Event do
       let(:subscriber2) { Object.new }
 
       before do
-        Lot::EventHandler.stubs(:types).returns [subscriber1, subscriber2]
+        Lot::EventSubscriber.stubs(:types).returns [subscriber1, subscriber2]
       end
 
       describe "and both subscribed to the event" do

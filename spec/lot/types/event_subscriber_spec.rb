@@ -3,25 +3,25 @@ require_relative '../../spec_helper'
 class OhAndAnotherThing < Lot::Base
 end
 
-describe Lot::EventHandler do
+describe Lot::EventSubscriber do
 
   before do
     setup_db
-    Lot::EventHandler.instance_eval { @types = nil }
+    Lot::EventSubscriber.instance_eval { @types = nil }
   end
 
   describe "types" do
 
     it "should return inherited types" do
       inherited = Object.new
-      Lot::EventHandler.inherited inherited
+      Lot::EventSubscriber.inherited inherited
 
-      Lot::EventHandler.types.count.must_equal 1
-      Lot::EventHandler.types.first.must_be_same_as inherited
+      Lot::EventSubscriber.types.count.must_equal 1
+      Lot::EventSubscriber.types.first.must_be_same_as inherited
     end
 
     it "should default to nothing" do
-      Lot::EventHandler.types.count.must_equal 0
+      Lot::EventSubscriber.types.count.must_equal 0
     end
 
   end
@@ -29,7 +29,7 @@ describe Lot::EventHandler do
   describe "subscribed?" do
 
     it "should return false by default" do
-      Lot::EventHandler.subscribed?(nil, nil, nil).must_equal false
+      Lot::EventSubscriber.subscribed?(nil, nil, nil).must_equal false
     end
 
   end
@@ -40,10 +40,10 @@ describe Lot::EventHandler do
     let(:the_data)  { Object.new }
     let(:instigator)     { Object.new }
 
-    before { eval "class Something < Lot::EventHandler; end" }
+    before { eval "class Something < Lot::EventSubscriber; end" }
 
     after do
-      Lot::EventHandler.instance_eval { @types = nil }
+      Lot::EventSubscriber.instance_eval { @types = nil }
     end
 
     it "should call execute with the event and data set" do
@@ -73,7 +73,7 @@ describe Lot::EventHandler do
         subject = OhAndAnotherThing.new
         subject.save!
 
-        handler = Lot::EventHandler.new
+        handler = Lot::EventSubscriber.new
         handler.data  = { 'record_id' => subject.id }
         handler.event = 'OhAndAnotherThing: Jump up and down'
 
@@ -98,7 +98,7 @@ describe Lot::EventHandler do
       subject = OhAndAnotherThing.new
       subject.save!
 
-      handler = Lot::EventHandler.new
+      handler = Lot::EventSubscriber.new
       handler.data  = { 'record_id' => subject.id }
       handler.event = "OhAndAnotherThing: #{task}"
 
