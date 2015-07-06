@@ -72,13 +72,8 @@ module Lot
 
     def method_missing meth, *args, &blk
       set_the_value(meth, args[0]) if setting_a_value? meth
-      if meth.to_s.end_with?('!')
-        instigator = args[0].is_a?(Hash) ? nil : args[0]
-        event = self.class.to_s + ': ' + meth.to_s.gsub('!', '').gsub('_', ' ').capitalize
-        data = ((args[0].is_a?(Hash) ? args[0] : args[1]) || {} ).merge( { 'id' => self.id } )
-        Lot::Event.publish event, data, instigator
-      end
-      get_the_value meth
+      this_is_an_event_call(meth) ? publish_the_event(meth, args)
+                                  : get_the_value(meth)
     end
 
     def the_data_source
@@ -141,6 +136,18 @@ module Lot
     end
 
     private
+
+    def this_is_an_event_call meth
+      meth.to_s.end_with? '!'
+    end
+
+    def publish_the_event meth, args
+      instigator = args[0].is_a?(Hash) ? nil : args[0]
+      event      = self.class.to_s + ': ' + meth.to_s.gsub('!', '').gsub('_', ' ').capitalize
+      data       = ((args[0].is_a?(Hash) ? args[0] : args[1]) || {} ).merge( { 'id' => self.id } )
+
+      Lot::Event.publish event, data, instigator
+    end
 
     def stamp_the_history_for record, instigator = nil
       old_data = record.data_as_hstore || {}
