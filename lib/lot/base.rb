@@ -73,9 +73,10 @@ module Lot
     def method_missing meth, *args, &blk
       set_the_value(meth, args[0]) if setting_a_value? meth
       if meth.to_s.end_with?('!')
+        instigator = args[0].is_a?(Hash) ? nil : args[0]
         event = self.class.to_s + ': ' + meth.to_s.gsub('!', '').gsub('_', ' ').capitalize
-        data = (args[1] || {} ).merge( { 'id' => self.id } )
-        Lot::Event.publish event, data, args[0]
+        data = ((args[0].is_a?(Hash) ? args[0] : args[1]) || {} ).merge( { 'id' => self.id } )
+        Lot::Event.publish event, data, instigator
       end
       get_the_value meth
     end

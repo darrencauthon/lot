@@ -234,6 +234,15 @@ describe Lot::Base do
               Lot::Event.expects(:publish).with("#{type.to_s}: Do something", { 'id' => record.id, key => value }, instigator)
               record.do_something! instigator, { key => value }
             end
+
+            it "should allow just the event data to be passed" do
+              key, value = random_string, random_string
+              record = type.new
+              record.save_by instigator
+
+              Lot::Event.expects(:publish).with("#{type.to_s}: Do something", { 'id' => record.id, key => value }, nil)
+              record.do_something!( { key => value } )
+            end
           end
 
         end
