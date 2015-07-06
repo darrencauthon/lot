@@ -1,4 +1,5 @@
 module Lot
+
   class EventHandler
 
     attr_accessor :event, :data
@@ -22,5 +23,7 @@ module Lot
         e.data  = data
       end.execute
     end
+
   end
+
 end
