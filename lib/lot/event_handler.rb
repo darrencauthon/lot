@@ -23,8 +23,8 @@ module Lot
 
     def self.fire event, data, instigator
       self.new.tap do |e|
-        e.event = event
-        e.data  = data
+        e.event      = event
+        e.data       = data
         e.instigator = instigator
       end.execute
     end
