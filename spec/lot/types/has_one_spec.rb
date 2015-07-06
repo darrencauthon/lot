@@ -15,7 +15,7 @@ end
 
 describe "has one" do
 
-  let(:saver) { Struct.new(:record_type, :id, :record_uuid).new(SecureRandom.uuid, rand(100), SecureRandom.uuid) }
+  let(:instigator) { Struct.new(:record_type, :id, :record_uuid).new(SecureRandom.uuid, rand(100), SecureRandom.uuid) }
 
   before { setup_db }
 
@@ -81,7 +81,7 @@ describe "has one" do
         name   = random_string
         planet = Planet.new
         planet.name = name
-        planet.save_by saver
+        planet.save_by instigator
 
         input = { record_type: :planet, id: planet.id }
         result = Lot::HasOne.deserialize input
@@ -94,7 +94,7 @@ describe "has one" do
         name   = random_string
         astronaut = Astronaut.new
         astronaut.name = name
-        astronaut.save_by saver
+        astronaut.save_by instigator
 
         input = { record_type: :astronaut, id: astronaut.id }
         result = Lot::HasOne.deserialize input
@@ -115,11 +115,11 @@ describe "has one" do
 
   describe "typing this into the system" do
 
-    let(:earth) { Planet.new.tap { |p| p.name = "Earth"; p.save_by(saver) } }
-    let(:mars)  { Planet.new.tap { |p| p.name = "Mars"; p.save_by(saver) } }
+    let(:earth) { Planet.new.tap { |p| p.name = "Earth"; p.save_by(instigator) } }
+    let(:mars)  { Planet.new.tap { |p| p.name = "Mars"; p.save_by(instigator) } }
 
-    let(:mary)  { Astronaut.new.tap { |a| a.name = "Mary"; a.save_by(saver) } }
-    let(:john)  { Astronaut.new.tap { |a| a.name = "John"; a.save_by(saver) } }
+    let(:mary)  { Astronaut.new.tap { |a| a.name = "Mary"; a.save_by(instigator) } }
+    let(:john)  { Astronaut.new.tap { |a| a.name = "John"; a.save_by(instigator) } }
 
     before do
       Astronaut.delete_all
@@ -129,7 +129,7 @@ describe "has one" do
 
     it "should allow me to designate a favorite planet" do
       mary.favorite_planet = earth
-      mary.save_by saver
+      mary.save_by instigator
 
       Astronaut.find(mary.id).favorite_planet.tap do |p|
         p.class.must_equal Planet
@@ -140,7 +140,7 @@ describe "has one" do
     it "should allow me to designate multiple things" do
       john.favorite_planet = mars
       john.least_favorite_planet = earth
-      john.save_by saver
+      john.save_by instigator
 
       Astronaut.find(john.id).favorite_planet.tap do |p|
         p.class.must_equal Planet

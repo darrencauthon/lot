@@ -11,7 +11,7 @@ end
 
 describe "object" do
 
-  let(:saver) { Struct.new(:record_type, :id, :record_uuid).new(SecureRandom.uuid, rand(100), SecureRandom.uuid) }
+  let(:instigator) { Struct.new(:record_type, :id, :record_uuid).new(SecureRandom.uuid, rand(100), SecureRandom.uuid) }
 
   before do
     setup_db
@@ -27,18 +27,18 @@ describe "object" do
     ['1', nil, 2].each do |value|
       lover = ObjectLover.new
       lover.thing = value
-      lover.save_by saver
+      lover.save_by instigator
       ObjectLover.find(lover.id).thing.must_equal value
     end
   end
 
   it "should allow me to save more complicated objects" do
     arnie = ObjectLover.new
-    arnie.save_by saver
+    arnie.save_by instigator
 
     lover = ObjectLover.new
     lover.thing = arnie
-    lover.save_by saver
+    lover.save_by instigator
 
     ObjectLover.find(lover.id).thing.is_a?(ObjectLover).must_equal true
     ObjectLover.find(lover.id).thing.id.must_equal arnie.id

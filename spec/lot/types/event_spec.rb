@@ -8,7 +8,7 @@ describe Lot::Event do
 
     let(:the_key)   { random_string }
     let(:the_value) { random_string }
-    let(:saver)     { Object.new }
+    let(:instigator) { Object.new }
     let(:data)      { { the_key => the_value } }
 
     describe "and two event subscribers are defined" do
@@ -23,15 +23,15 @@ describe Lot::Event do
       describe "and both subscribed to the event" do
 
         before do
-          subscriber1.stubs(:subscribed?).with(event, data, saver).returns true
-          subscriber2.stubs(:subscribed?).with(event, data, saver).returns true
+          subscriber1.stubs(:subscribed?).with(event, data, instigator).returns true
+          subscriber2.stubs(:subscribed?).with(event, data, instigator).returns true
         end
 
         it "should fire each of the subscribers" do
-          subscriber1.expects(:fire).with event, data, saver
-          subscriber2.expects(:fire).with event, data, saver
+          subscriber1.expects(:fire).with event, data, instigator
+          subscriber2.expects(:fire).with event, data, instigator
 
-          Lot::Event.publish event, data, saver
+          Lot::Event.publish event, data, instigator
         end
 
       end
@@ -39,13 +39,13 @@ describe Lot::Event do
       describe "and only one is subscribed to the event" do
 
         before do
-          subscriber1.stubs(:subscribed?).with(event, data, saver).returns true
-          subscriber2.stubs(:subscribed?).with(event, data, saver).returns false
+          subscriber1.stubs(:subscribed?).with(event, data, instigator).returns true
+          subscriber2.stubs(:subscribed?).with(event, data, instigator).returns false
         end
 
         it "should fire each of the subscribers" do
-          subscriber1.expects(:fire).with event, data, saver
-          Lot::Event.publish event, data, saver
+          subscriber1.expects(:fire).with event, data, instigator
+          Lot::Event.publish event, data, instigator
         end
 
       end

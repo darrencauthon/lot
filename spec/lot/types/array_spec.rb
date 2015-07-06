@@ -11,7 +11,7 @@ end
 
 describe "array" do
 
-  let(:saver) { Struct.new(:record_type, :id, :record_uuid).new(SecureRandom.uuid, rand(100), SecureRandom.uuid) }
+  let(:instigator) { Struct.new(:record_type, :id, :record_uuid).new(SecureRandom.uuid, rand(100), SecureRandom.uuid) }
 
   before do
     setup_db
@@ -27,7 +27,7 @@ describe "array" do
   it "should allow me to save arrays of strings" do
     lover = ArrayLover.new
     lover.things = ['a', 'b']
-    lover.save_by saver
+    lover.save_by instigator
 
     lover = ArrayLover.find lover.id
     lover.things.count.must_equal 2
@@ -38,7 +38,7 @@ describe "array" do
   it "should allow me to save arrays of numbers" do
     lover = ArrayLover.new
     lover.things = [1, 2]
-    lover.save_by saver
+    lover.save_by instigator
 
     lover = ArrayLover.find lover.id
     lover.things.count.must_equal 2
@@ -49,7 +49,7 @@ describe "array" do
   it "should allow me to save hashes" do
     lover = ArrayLover.new
     lover.things = [ { name: 'a' }, { name: 'b' } ]
-    lover.save_by saver
+    lover.save_by instigator
 
     lover = ArrayLover.find lover.id
     lover.things.count.must_equal 2
@@ -60,7 +60,7 @@ describe "array" do
   it "should allow me to save hashes, and return them as hash with indifferent access" do
     lover = ArrayLover.new
     lover.things = [ { name: 'a' }, { name: 'b' } ]
-    lover.save_by saver
+    lover.save_by instigator
 
     lover = ArrayLover.find lover.id
     lover.things.count.must_equal 2
