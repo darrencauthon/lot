@@ -14,7 +14,7 @@ types_for_lot_base_testing = [Elephant, Giraffe]
 
 describe Lot::Base do
 
-  let(:saver) { Struct.new(:record_type, :id, :record_uuid).new(SecureRandom.uuid, rand(100), SecureRandom.uuid) }
+  let(:instigator) { Struct.new(:record_type, :id, :record_uuid).new(SecureRandom.uuid, rand(100), SecureRandom.uuid) }
 
   types_for_lot_base_testing.each do |type|
 
@@ -64,7 +64,7 @@ describe Lot::Base do
         it "should return the number of records" do
           base_type = eval("#{type}Base")
           base_type.delete_all
-          3.times { type.new.save_by(saver) }
+          3.times { type.new.save_by(instigator) }
           type.count.must_equal 3
         end
       end
@@ -82,7 +82,7 @@ describe Lot::Base do
 
         it "should allow me to save records" do
           record = type.new
-          record.save_by(saver)
+          record.save_by(instigator)
           type.count.must_equal 1
         end
 
@@ -90,7 +90,7 @@ describe Lot::Base do
           name = SecureRandom.uuid
           record = type.new
           record.name = name
-          record.save_by(saver)
+          record.save_by(instigator)
 
           record = type.find record.id
           record.name.must_equal name
@@ -101,14 +101,14 @@ describe Lot::Base do
           record = type.new
           record.city  = city
           record.state = state
-          record.save_by(saver)
+          record.save_by(instigator)
 
           record = type.find record.id
           record.city.must_equal city
           record.state.must_equal state
         end
 
-        describe "creating without a saver" do
+        describe "creating without a instigator" do
           it "should let me create a record without a creator" do
             name = SecureRandom.uuid
             record = type.new
@@ -123,21 +123,21 @@ describe Lot::Base do
         describe "deleting records" do
           it "should let me delete records" do
             record = type.new
-            record.save_by(saver)
+            record.save_by(instigator)
 
             record = type.find record.id
-            record.delete_by saver
+            record.delete_by instigator
             type.all.count.must_equal 0
           end
 
           it "should keep any non-deleted records" do
             record = type.new
-            record.save_by(saver)
+            record.save_by(instigator)
 
-            others = [1, 2].map { |_| type.new.tap { |x| x.save_by saver } }
+            others = [1, 2].map { |_| type.new.tap { |x| x.save_by instigator } }
 
             record = type.find record.id
-            record.delete_by saver
+            record.delete_by instigator
             type.all.count.must_equal 2
 
             type.find(others[0].id).nil?.must_equal false
@@ -145,34 +145,34 @@ describe Lot::Base do
           end
 
           it "should keep a history of the deleted record" do
-            record = type.new.tap { |x| x.save_by saver }
-            record.delete_by saver
+            record = type.new.tap { |x| x.save_by instigator }
+            record.delete_by instigator
             Lot::DeletedRecord.count.must_equal 1
           end
 
           it "should retain the record type" do
-            record = type.new.tap { |x| x.save_by saver }
-            record.delete_by saver
+            record = type.new.tap { |x| x.save_by instigator }
+            record.delete_by instigator
             Lot::DeletedRecord.first.record_type.must_equal record.record_type
           end
 
           it "should retain the record id, as a string" do
-            record = type.new.tap { |x| x.save_by saver }
-            record.delete_by saver
+            record = type.new.tap { |x| x.save_by instigator }
+            record.delete_by instigator
             Lot::DeletedRecord.first.record_id.must_equal record.id.to_s
           end
 
           it "should retain the record uuid, as a string" do
-            record = type.new.tap { |x| x.save_by saver }
-            record.delete_by saver
+            record = type.new.tap { |x| x.save_by instigator }
+            record.delete_by instigator
             Lot::DeletedRecord.first.record_uuid.must_equal record.record_uuid.to_s
           end
 
           it "should retain record data" do
             name = SecureRandom.uuid
-            record = type.new.tap { |x| x.save_by saver }
+            record = type.new.tap { |x| x.save_by instigator }
             record.name = name
-            record.delete_by saver
+            record.delete_by instigator
             JSON.parse(Lot::DeletedRecord.first.data)['name'].must_equal record.name
           end
         end
@@ -187,9 +187,9 @@ describe Lot::Base do
               record = type.new
               record.name = name
 
-              Lot::Event.expects(:publish).with("#{type.to_s} created", { 'name' => name }, saver)
+              Lot::Event.expects(:publish).with("#{type.to_s} created", { 'name' => name }, instigator)
 
-              record.save_by(saver)
+              record.save_by(instigator)
             end
 
           end
@@ -199,12 +199,12 @@ describe Lot::Base do
             it "should fire a record updated event" do
               record = type.new
               record.name = random_string
-              record.save_by saver
+              record.save_by instigator
 
               name = random_string
-              Lot::Event.expects(:publish).with("#{type.to_s} updated", { 'name' => name }, saver)
+              Lot::Event.expects(:publish).with("#{type.to_s} updated", { 'name' => name }, instigator)
               record.name = name
-              record.save_by(saver)
+              record.save_by(instigator)
             end
 
           end
@@ -213,7 +213,7 @@ describe Lot::Base do
 
       end
 
-      describe "trying to save without a saver" do
+      describe "trying to save without a instigator" do
         it "should not save the record" do
           record = type.new
           record.save_by nil
@@ -258,7 +258,7 @@ describe Lot::Base do
 
           record = type.new
           record.send("#{field}=", SecureRandom.uuid)
-          record.save_by(saver)
+          record.save_by(instigator)
 
           record.dirty_properties.count.must_equal 0
         end
@@ -269,7 +269,7 @@ describe Lot::Base do
 
           record = type.new
           record.send("#{field}=", value)
-          record.save_by(saver)
+          record.save_by(instigator)
 
           record.send("#{field}=", value)
 
@@ -288,7 +288,7 @@ describe Lot::Base do
 
         it "should persist the record uuid" do
           record = type.new
-          record.save_by(saver)
+          record.save_by(instigator)
           id          = record.id
           record_uuid = record.record_uuid
 
@@ -307,7 +307,7 @@ describe Lot::Base do
 
         it "should stamp a history of the record being created" do
           record = type.new
-          record.save_by(saver)
+          record.save_by(instigator)
 
           record.history.count.must_equal 1
         end
@@ -320,7 +320,7 @@ describe Lot::Base do
           let(:record) do
             type.new.tap do |r|
               r.send("#{key}=".to_sym, the_value)
-              r.save_by(saver)
+              r.save_by(instigator)
             end
           end
 
@@ -349,7 +349,7 @@ describe Lot::Base do
 
             before do
               record.send("#{key}=".to_sym, new_value)
-              record.save_by(saver)
+              record.save_by(instigator)
             end
 
             it "should include the old data" do
@@ -364,16 +364,16 @@ describe Lot::Base do
 
           describe "stamping who made the change" do
 
-            it "should include saver's id" do
-              record.history[0].saver_id.must_equal saver.id
+            it "should include instigator's id" do
+              record.history[0].instigator_id.must_equal instigator.id
             end
 
-            it "should include saver's uuid" do
-              record.history[0].saver_uuid.must_equal saver.record_uuid
+            it "should include instigator's uuid" do
+              record.history[0].instigator_uuid.must_equal instigator.record_uuid
             end
 
-            it "should include saver's type" do
-              record.history[0].saver_type.must_equal saver.record_type
+            it "should include instigator's type" do
+              record.history[0].instigator_type.must_equal instigator.record_type
             end
 
           end
@@ -435,7 +435,7 @@ describe Lot::Base do
 
             record = type.new
             record.send("#{field}=".to_sym, SecureRandom.uuid)
-            record.save_by(saver)
+            record.save_by(instigator)
 
             type.schema.count.must_equal 1
             type.schema[0][:name].must_equal field
@@ -447,7 +447,7 @@ describe Lot::Base do
             record = type.new
             record.send("#{field}=".to_sym, SecureRandom.uuid)
             record.send("#{field}=".to_sym, SecureRandom.uuid)
-            record.save_by(saver)
+            record.save_by(instigator)
 
             type.schema.count.must_equal 1
           end
@@ -459,7 +459,7 @@ describe Lot::Base do
             record = type.new
             record.send("#{field1}=".to_sym, SecureRandom.uuid)
             record.send("#{field2}=".to_sym, SecureRandom.uuid)
-            record.save_by(saver)
+            record.save_by(instigator)
 
             type.schema.count.must_equal 2
             type.schema[0][:name].must_equal field1
@@ -471,7 +471,7 @@ describe Lot::Base do
 
             record = type.new
             record.send("#{field}=".to_sym, SecureRandom.uuid)
-            record.save_by(saver)
+            record.save_by(instigator)
 
             type.schema.count.must_equal 1
             type.schema[0][:type].must_equal :string
@@ -519,7 +519,7 @@ describe Lot::Base do
               record = type.new
               value  = SecureRandom.uuid
               record.send("#{field}=".to_sym, value)
-              record.save_by(saver)
+              record.save_by(instigator)
 
               record = type.find record.id
               record.send(field).must_equal ".#{value}."
@@ -546,8 +546,8 @@ describe Lot::Base do
     end
 
     it "should keep the counts separate" do
-      first_record = first_type.new.save_by(saver)
-      second_record = second_type.new.save_by(saver)
+      first_record = first_type.new.save_by(instigator)
+      second_record = second_type.new.save_by(instigator)
 
       first_type.count.must_equal 1
       second_type.count.must_equal 1
@@ -555,9 +555,9 @@ describe Lot::Base do
 
     it "should update the record after it has been created" do
       record = first_type.new
-      record.save_by(saver)
+      record.save_by(instigator)
       record.name = 'something'
-      record.save_by(saver)
+      record.save_by(instigator)
 
       first_type.count.must_equal 1
 
@@ -570,7 +570,7 @@ describe Lot::Base do
       expected = Object.new
       record = first_type.new
       eval("#{first_type}Base").any_instance.stubs(:save).returns expected
-      record.save_by(saver).must_be_same_as expected
+      record.save_by(instigator).must_be_same_as expected
     end
 
   end
@@ -586,16 +586,16 @@ describe Lot::Base do
     end
 
     it "should return a query based on the record type" do
-      first_record = first_type.new.save_by(saver)
-      second_record = second_type.new.save_by(saver)
+      first_record = first_type.new.save_by(instigator)
+      second_record = second_type.new.save_by(instigator)
 
       first_type.the_data_source_query.count.must_equal 1
       second_type.the_data_source_query.count.must_equal 1
     end
 
     it "should return the active record objects" do
-      first_record = first_type.new.save_by(saver)
-      second_record = second_type.new.save_by(saver)
+      first_record = first_type.new.save_by(instigator)
+      second_record = second_type.new.save_by(instigator)
 
       first_type.the_data_source_query.first.is_a?(ActiveRecord::Base).must_equal true
       second_type.the_data_source_query.first.is_a?(ActiveRecord::Base).must_equal true
@@ -614,8 +614,8 @@ describe Lot::Base do
     end
 
     it "should return the appropriate records" do
-      first_record = first_type.new.save_by(saver)
-      second_record = second_type.new.save_by(saver)
+      first_record = first_type.new.save_by(instigator)
+      second_record = second_type.new.save_by(instigator)
 
       first_type.all.count.must_equal 1
       second_type.all.count.must_equal 1
@@ -623,10 +623,10 @@ describe Lot::Base do
 
     it "should return the records for each" do
       first_record = first_type.new
-      first_record.save_by(saver)
+      first_record.save_by(instigator)
 
       second_record = second_type.new
-      second_record.save_by(saver)
+      second_record.save_by(instigator)
 
       first_type.all.first.id.must_equal first_record.id
       second_type.all.first.id.must_equal second_record.id
@@ -647,10 +647,10 @@ describe Lot::Base do
     end
 
     it "should allow the saving of data to different tables" do
-      Lion.new.save_by(saver)
+      Lion.new.save_by(instigator)
       LionBase.connection.execute("SELECT Count(*) FROM lions")[0]['count'].to_i.must_equal 1
-      Elephant.new.save_by(saver)
-      Giraffe.new.save_by(saver)
+      Elephant.new.save_by(instigator)
+      Giraffe.new.save_by(instigator)
       LionBase.connection.execute("SELECT Count(*) FROM records")[0]['count'].to_i.must_equal 2
     end
 

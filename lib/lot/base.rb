@@ -27,7 +27,7 @@ module Lot
       self.class.to_s.underscore.gsub(' ', '_')
     end
 
-    def delete_by saver
+    def delete_by instigator
       DeletedRecord.create(record_type: record_type,
                            record_id:   id,
                            record_uuid: record_uuid,
@@ -39,23 +39,23 @@ module Lot
       save!
     end
 
-    def save_by saver
-      return false unless saver
-      save!( { saver: saver } )
+    def save_by instigator
+      return false unless instigator
+      save!( { instigator: instigator } )
     end
 
     def save! options = {}
-      saver = options[:saver]
+      instigator = options[:instigator]
       @dirties = nil
       record = find_or_new_up_record
       persisted = record.persisted?
-      stamp_the_history_for(record, saver) do
+      stamp_the_history_for(record, instigator) do
         record.data_as_hstore = @data
         record.record_id      = self.record_uuid
 
         record.save.tap do |_|
           self.id = record.id
-          Lot::Event.publish("#{self.class.to_s} #{persisted ? 'updated' : 'created'}", @data, saver)
+          Lot::Event.publish("#{self.class.to_s} #{persisted ? 'updated' : 'created'}", @data, instigator)
         end
       end
     end
@@ -136,7 +136,7 @@ module Lot
 
     private
 
-    def stamp_the_history_for record, saver = nil
+    def stamp_the_history_for record, instigator = nil
       old_data = record.data_as_hstore || {}
       yield.tap do
         RecordHistory.create(record_type: self.record_type,
@@ -144,9 +144,9 @@ module Lot
                              record_uuid: self.record_uuid,
                              old_data:    old_data,
                              new_data:    @data,
-                             saver_id:    saver ? saver.id          : nil,
-                             saver_uuid:  saver ? saver.record_uuid : nil,
-                             saver_type:  saver ? saver.record_type : nil)
+                             saver_id:    instigator ? instigator.id          : nil,
+                             saver_uuid:  instigator ? instigator.record_uuid : nil,
+                             saver_type:  instigator ? instigator.record_type : nil)
       end
     end
 
