@@ -187,7 +187,7 @@ describe Lot::Base do
               record = type.new
               record.name = name
 
-              Lot::Event.expects(:publish).with("#{type.to_s.downcase}_created", { 'name' => name } )
+              Lot::Event.expects(:publish).with("#{type.to_s} created", { 'name' => name } )
 
               record.save_by(saver)
             end
@@ -202,7 +202,7 @@ describe Lot::Base do
               record.save_by saver
 
               name = random_string
-              Lot::Event.expects(:publish).with("#{type.to_s.downcase}_updated", { 'name' => name } )
+              Lot::Event.expects(:publish).with("#{type.to_s} updated", { 'name' => name } )
               record.name = name
               record.save_by(saver)
             end
