@@ -190,7 +190,7 @@ describe Lot::Base do
               t = type
               Lot::Event.expects(:publish).with do |e, d, i|
                 e.must_equal "#{type.to_s}: Created"
-                d['id'].must_equal t.all.first.id
+                d['record_id'].must_equal t.all.first.id
                 d['name'].must_equal name
                 i.must_be_same_as instigator
               end
@@ -208,7 +208,7 @@ describe Lot::Base do
               record.save_by instigator
 
               name = random_string
-              Lot::Event.expects(:publish).with("#{type.to_s}: Updated", { 'id' => record.id, 'name' => name }, instigator)
+              Lot::Event.expects(:publish).with("#{type.to_s}: Updated", { 'record_id' => record.id, 'name' => name }, instigator)
               record.name = name
               record.save_by(instigator)
             end
@@ -220,7 +220,7 @@ describe Lot::Base do
               record = type.new
               record.save_by instigator
 
-              Lot::Event.expects(:publish).with("#{type.to_s}: Do something", { 'id' => record.id }, nil)
+              Lot::Event.expects(:publish).with("#{type.to_s}: Do something", { 'record_id' => record.id }, nil)
               record.do_something!
             end
 
@@ -228,7 +228,7 @@ describe Lot::Base do
               record = type.new
               record.save_by instigator
 
-              Lot::Event.expects(:publish).with("#{type.to_s}: Do something", { 'id' => record.id }, instigator)
+              Lot::Event.expects(:publish).with("#{type.to_s}: Do something", { 'record_id' => record.id }, instigator)
               record.do_something! instigator
             end
 
@@ -237,7 +237,7 @@ describe Lot::Base do
               record = type.new
               record.save_by instigator
 
-              Lot::Event.expects(:publish).with("#{type.to_s}: Do something", { 'id' => record.id, key => value }, instigator)
+              Lot::Event.expects(:publish).with("#{type.to_s}: Do something", { 'record_id' => record.id, key => value }, instigator)
               record.do_something! instigator, { key => value }
             end
 
@@ -246,7 +246,7 @@ describe Lot::Base do
               record = type.new
               record.save_by instigator
 
-              Lot::Event.expects(:publish).with("#{type.to_s}: Do something", { 'id' => record.id, key => value }, nil)
+              Lot::Event.expects(:publish).with("#{type.to_s}: Do something", { 'record_id' => record.id, key => value }, nil)
               record.do_something!( { key => value } )
             end
           end
