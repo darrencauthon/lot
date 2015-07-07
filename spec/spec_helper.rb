@@ -4,6 +4,10 @@ require 'minitest/spec'
 require 'mocha/setup'
 
 def setup_db options = {}
+
+  # reset the event subscribers, so there is no bleed between tests
+  Lot::EventSubscriber.instance_eval { @types = nil }
+
   options.merge!( {
                     adapter: 'postgresql',
                     host:    '::1',
