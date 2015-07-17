@@ -20,8 +20,8 @@ module Lot
       else
         @record_uuid = SecureRandom.uuid
       end
+      @deserialized_stuff = {}
       @data ||= HashWithIndifferentAccess.new({})
-      @deserialized_keys = []
     end
 
     def record_type
@@ -48,6 +48,7 @@ module Lot
     def save! options = {}
       instigator = options[:instigator]
       @dirties = nil
+      #@deserialized_stuff.each { |k, v| self.send("#{k}=".to_sym, v) }
       record = find_or_new_up_record
       persisted = record.persisted?
       stamp_the_history_for(record, instigator) do
@@ -182,9 +183,8 @@ module Lot
     end
 
     def deserialize_the key, stuff
-      return @data[key] if @deserialized_keys.include?(key)
-      @deserialized_keys << key
-      @data[key] = stuff[:definition][:deserialize].call(@data[key])
+      return @deserialized_stuff[key] if @deserialized_stuff[key]
+      @deserialized_stuff[key] = stuff[:definition][:deserialize].call(@data[key])
     end
 
     def set_the_value meth, value
@@ -195,6 +195,7 @@ module Lot
                                  : value
       the_value_did_not_change = value == get_the_value(meth)
       @data[key] = value
+      @deserialized_stuff[key] = nil
       dirty_properties << key unless the_value_did_not_change || dirty_properties.include?(key)
     end
 

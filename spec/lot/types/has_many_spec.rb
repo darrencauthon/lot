@@ -52,6 +52,14 @@ describe "has many" do
       animal.phylums.count.must_equal 0
     end
 
+    #it "should allow me to add items to an array, then pull them out without issue" do
+      #animal.phylums << kinorhyncha
+      #animal.save_by instigator
+
+      #the_animal = Kingdom.find animal.id
+      #the_animal.phylums.count.must_equal 1
+    #end
+
   end
 
 end
