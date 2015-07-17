@@ -48,7 +48,6 @@ module Lot
     def save! options = {}
       instigator = options[:instigator]
       @dirties = nil
-      #@deserialized_stuff.each { |k, v| self.send("#{k}=".to_sym, v) }
       record = find_or_new_up_record
       persisted = record.persisted?
       stamp_the_history_for(record, instigator) do
