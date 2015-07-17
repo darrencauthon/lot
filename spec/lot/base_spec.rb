@@ -557,6 +557,13 @@ describe Lot::Base do
               type.new.send(field).must_equal '.'
             end
 
+            it "should return the same deserialized value each time" do
+              object = type.new
+              first  = object.send(field)
+              second = object.send(field)
+              first.object_id.must_equal second.object_id
+            end
+
             it "should run the value through the serializer when setting it" do
               record = type.new
               value  = SecureRandom.uuid

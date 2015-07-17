@@ -21,6 +21,7 @@ module Lot
         @record_uuid = SecureRandom.uuid
       end
       @data ||= HashWithIndifferentAccess.new({})
+      @deserialized_keys = []
     end
 
     def record_type
@@ -176,8 +177,14 @@ module Lot
     def get_the_value meth
       key   = pull_the_key_from meth
       stuff = lookup_schema_stuff_for key
-      stuff[:definition] ? stuff[:definition][:deserialize].call(@data[key])
+      stuff[:definition] ? deserialize_the(key, stuff)
                          : @data[key]
+    end
+
+    def deserialize_the key, stuff
+      return @data[key] if @deserialized_keys.include?(key)
+      @deserialized_keys << key
+      @data[key] = stuff[:definition][:deserialize].call(@data[key])
     end
 
     def set_the_value meth, value
