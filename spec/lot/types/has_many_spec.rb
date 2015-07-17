@@ -48,6 +48,10 @@ describe "has many" do
       end
     end
 
+    it "should default to an empty array" do
+      animal.phylums.count.must_equal 0
+    end
+
   end
 
 end

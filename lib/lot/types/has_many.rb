@@ -8,7 +8,7 @@ module Lot
     end
 
     def self.deserialize input
-      return nil unless input
+      return [] unless input
       input = standardize_the_serialized_input input
       input.map { |x| Lot.class_from_record_type(x[:record_type]).find x[:id] }
     end
