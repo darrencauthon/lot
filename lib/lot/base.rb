@@ -54,6 +54,9 @@ module Lot
         record.data_as_hstore = @data
         record.record_id      = self.record_uuid
 
+        @data.select { |k, _| record.respond_to?(k) }
+             .each   { |k, v| record.send("#{k}=", v) }
+
         record.save.tap do |_|
           self.id = record.id
           the_data = @data.dup.merge('record_id' => record.id)

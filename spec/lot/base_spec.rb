@@ -707,6 +707,20 @@ describe Lot::Base do
       Elephant.table_name.must_equal 'records' 
     end
 
+    describe "storing data in columns" do
+
+      it "should stamp the column on the base AR object" do
+        tamer = random_string
+
+        lion = Lion.new
+        lion.tamer = tamer
+        lion.save_by(instigator)
+
+        LionBase.first.tamer.must_equal tamer
+      end
+
+    end
+
   end
 
   describe "inherited" do
