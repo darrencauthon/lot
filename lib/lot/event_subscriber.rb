@@ -5,9 +5,7 @@ module Lot
     attr_accessor :event, :data, :instigator
 
     def subject
-      segments = event.split ':'
-      segments.pop
-      type = segments.join(':')
+      type = event.split(':').tap { |x| x.pop }.join(':')
       type.constantize.find data['record_id']
     end
 
