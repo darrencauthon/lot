@@ -123,6 +123,19 @@ describe Lot::EventSubscriber do
       handler.task.must_equal task
     end
 
+    it "should look up the task for more complicated types" do
+      task = random_string
+
+      subject = OhAndAnotherThing.new
+      subject.save!
+
+      handler = Lot::EventSubscriber.new
+      handler.data  = { 'record_id' => subject.id }
+      handler.event = "Hey::You::GoodJob: #{task}"
+
+      handler.task.must_equal task
+    end
+
   end
 
 end

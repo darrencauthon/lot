@@ -12,7 +12,7 @@ module Lot
     end
 
     def task
-      event.split(':')[1].strip
+      event.split(':').pop.strip
     end
 
     def self.inherited type
