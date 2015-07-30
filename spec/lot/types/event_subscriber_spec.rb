@@ -87,6 +87,17 @@ describe Lot::EventSubscriber do
         handler.subject.id.must_equal subject.id
       end
 
+      it "should return the same subject each time" do
+        subject = OhAndAnotherThing.new
+        subject.save!
+
+        handler = Lot::EventSubscriber.new
+        handler.data  = { 'record_id' => subject.id }
+        handler.event = 'OhAndAnotherThing: Jump up and down'
+
+        handler.subject.object_id.must_equal handler.subject.object_id
+      end
+
       it "should look up more complicated types" do
         subject = Hey::You::GoodJob.new
         subject.save!
