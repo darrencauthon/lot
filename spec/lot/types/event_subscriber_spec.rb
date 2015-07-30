@@ -3,6 +3,13 @@ require_relative '../../spec_helper'
 class OhAndAnotherThing < Lot::Base
 end
 
+module Hey
+  module You
+    class GoodJob < Lot::Base
+    end
+  end
+end
+
 describe Lot::EventSubscriber do
 
   before do
@@ -80,6 +87,17 @@ describe Lot::EventSubscriber do
         handler.subject.id.must_equal subject.id
       end
 
+      it "should look up more complicated types" do
+        subject = Hey::You::GoodJob.new
+        subject.save!
+
+        handler = Lot::EventSubscriber.new
+        handler.data  = { 'record_id' => subject.id }
+        handler.event = 'Hey::You::GoodJob: Jump up and down'
+
+        handler.subject.id.must_equal subject.id
+      end
+
     end
 
   end
@@ -101,6 +119,19 @@ describe Lot::EventSubscriber do
       handler = Lot::EventSubscriber.new
       handler.data  = { 'record_id' => subject.id }
       handler.event = "OhAndAnotherThing: #{task}"
+
+      handler.task.must_equal task
+    end
+
+    it "should look up the task for more complicated types" do
+      task = random_string
+
+      subject = OhAndAnotherThing.new
+      subject.save!
+
+      handler = Lot::EventSubscriber.new
+      handler.data  = { 'record_id' => subject.id }
+      handler.event = "Hey::You::GoodJob: #{task}"
 
       handler.task.must_equal task
     end
