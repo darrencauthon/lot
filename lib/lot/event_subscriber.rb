@@ -5,10 +5,10 @@ module Lot
     attr_accessor :event, :data, :instigator
 
     def subject
-      event.split(':').tap { |x| x.pop }
-           .join(':')
-           .constantize
-           .find data['record_id']
+      @subject ||= event.split(':').tap { |x| x.pop }
+                        .join(':')
+                        .constantize
+                        .find data['record_id']
     end
 
     def task
