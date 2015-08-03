@@ -727,6 +727,10 @@ describe Lot::Base do
 
         lion.created_at.must_equal LionBase.first.created_at
       end
+
+      it "should return nil if the record has not been created" do
+        Lion.new.created_at.nil?.must_equal true
+      end
     end
 
   end
