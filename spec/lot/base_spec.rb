@@ -721,6 +721,14 @@ describe Lot::Base do
 
     end
 
+    describe "created_at" do
+      it "should expose created_at" do
+        lion = Lion.new.tap { |l| l.save_by(instigator) }
+
+        lion.created_at.must_equal LionBase.first.created_at
+      end
+    end
+
   end
 
   describe "inherited" do

@@ -81,6 +81,11 @@ module Lot
                                   : get_the_value(meth)
     end
 
+    def created_at
+
+      the_data_source.where(id: self.id).first.created_at
+    end
+
     def the_data_source
       @the_data_source ||= self.class.the_data_source
     end
