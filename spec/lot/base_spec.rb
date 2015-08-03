@@ -721,6 +721,35 @@ describe Lot::Base do
 
     end
 
+    describe "created_at" do
+      it "should expose created_at" do
+        lion = Lion.new.tap { |l| l.save_by(instigator) }
+
+        lion.created_at.must_equal LionBase.first.created_at
+      end
+
+      it "should return nil if the record has not been created" do
+        Lion.new.created_at.nil?.must_equal true
+      end
+    end
+
+    describe "updated_at" do
+      it "should expose updated_at" do
+        lion = Lion.new.tap { |l| l.save_by(instigator) }
+
+        # make sure updated_at does not equal created_at
+        sleep(0.1)
+        lion.name = '123'
+        lion.save!
+
+        lion.updated_at.must_equal LionBase.first.updated_at
+      end
+
+      it "should return nil if the record has not been created" do
+        Lion.new.updated_at.nil?.must_equal true
+      end
+    end
+
   end
 
   describe "inherited" do
