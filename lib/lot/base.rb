@@ -108,9 +108,7 @@ module Lot
       attr_reader :table_name
       def set_table_name_to table
         @table_name = table
-        eval("class #{the_data_source_for(self)} < ActiveRecord::Base
-                self.table_name = '#{@table_name}'
-              end")
+        @this_was_loaded = false
       end
 
       def default_schema
@@ -147,7 +145,14 @@ module Lot
       end
 
       def the_data_source_for thing
-        "::#{thing}Base"
+        "::#{thing}Base".tap do |ds|
+          unless @this_was_loaded
+            eval("class #{ds} < ActiveRecord::Base
+                    self.table_name = '#{@table_name}'
+                  end")
+            @this_was_loaded = true
+          end
+        end
       end
 
     end
