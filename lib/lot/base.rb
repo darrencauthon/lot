@@ -120,7 +120,14 @@ module Lot
       end
 
       def the_data_source
-        @the_data_source ||= the_data_source_for(self).constantize
+        @the_data_source ||= the_data_source_for(self).tap do |ds|
+                               unless @this_was_loaded
+                                 eval("class #{ds} < ActiveRecord::Base
+                                         self.table_name = '#{@table_name}'
+                                       end")
+                                 @this_was_loaded = true
+                               end
+                             end.constantize
       end
 
       def count
@@ -145,14 +152,7 @@ module Lot
       end
 
       def the_data_source_for thing
-        "::#{thing}Base".tap do |ds|
-          unless @this_was_loaded
-            eval("class #{ds} < ActiveRecord::Base
-                    self.table_name = '#{@table_name}'
-                  end")
-            @this_was_loaded = true
-          end
-        end
+        "::#{thing}Base"
       end
 
     end
