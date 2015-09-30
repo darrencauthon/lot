@@ -752,6 +752,32 @@ describe Lot::Base do
 
   end
 
+  describe "where" do
+
+    before do
+      setup_db
+      Lion.delete_all
+    end
+
+    it "should look up the value via a where clause" do
+
+      Lion.new.tap { |x| x.tamer = random_string }.save!
+      Lion.new.tap { |x| x.tamer = random_string }.save!
+      Lion.new.tap { |x| x.tamer = random_string }.save!
+
+      tamer = random_string
+      lion  = Lion.new.tap do |l|
+                l.tamer = tamer
+                l.save_by(instigator)
+              end
+
+      Lion.where(tamer: tamer).count.must_equal 1
+
+    end
+
+  end
+
+
   describe "inherited" do
 
     let(:type) { Object.new }

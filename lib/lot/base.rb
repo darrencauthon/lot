@@ -28,6 +28,12 @@ module Lot
       self.class.to_s.underscore.gsub(' ', '_')
     end
 
+    def self.where options
+      the_data_source_query
+        .where(options)
+        .map { |r| new r }
+    end
+
     def delete_by instigator
       DeletedRecord.create(record_type: record_type,
                            record_id:   id,
